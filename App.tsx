@@ -1,62 +1,94 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   SafeAreaView,
-  ScrollView,
   StatusBar,
   StyleSheet,
   Text,
-  useColorScheme,
   View,
+  useColorScheme,
+  ActivityIndicator,
 } from 'react-native';
 
-import { platformSelect } from './src/utils/platform';
+import { useAuth } from './src/hooks/useAuth';
+import { LoginScreen, SignupScreen } from './src/screens/auth';
+import { DashboardScreen } from './src/screens/dashboard';
+
+type AuthScreen = 'login' | 'signup' | 'forgot-password';
 
 function App(): React.JSX.Element {
+  const { user, loading } = useAuth();
+  const [authScreen, setAuthScreen] = useState<AuthScreen>('login');
   const isDarkMode = useColorScheme() === 'dark';
 
   const backgroundStyle = {
-    backgroundColor: isDarkMode ? '#1a1a1a' : '#f8f9fa',
+    backgroundColor: isDarkMode ? '#000' : '#fff',
   };
 
-  const platformTitle = platformSelect({
-    web: 'VolTracker Web',
-    ios: 'VolTracker iOS',
-    android: 'VolTracker Android',
-    default: 'VolTracker',
-  });
+  // Show loading screen while checking auth state
+  if (loading) {
+    return (
+      <SafeAreaView style={[styles.container, backgroundStyle]}>
+        <StatusBar
+          barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+          backgroundColor={backgroundStyle.backgroundColor}
+        />
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#007bff" />
+          <Text style={[styles.loadingText, { color: isDarkMode ? '#fff' : '#000' }]}>
+            Loading VolTracker...
+          </Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
+  // Show dashboard if user is authenticated
+  if (user) {
+    return (
+      <SafeAreaView style={[styles.container, backgroundStyle]}>
+        <StatusBar
+          barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+          backgroundColor={backgroundStyle.backgroundColor}
+        />
+        <DashboardScreen />
+      </SafeAreaView>
+    );
+  }
+
+  // Show authentication screens
   return (
     <SafeAreaView style={[styles.container, backgroundStyle]}>
       <StatusBar
         barStyle={isDarkMode ? 'light-content' : 'dark-content'}
         backgroundColor={backgroundStyle.backgroundColor}
       />
-      <ScrollView style={styles.scrollView}>
-        <View style={styles.content}>
-          <Text style={[styles.title, { color: isDarkMode ? '#fff' : '#000' }]}>
-            Welcome to {platformTitle}
+
+      {authScreen === 'login' && (
+        <LoginScreen
+          onNavigateToSignup={() => setAuthScreen('signup')}
+          onNavigateToForgotPassword={() => setAuthScreen('forgot-password')}
+        />
+      )}
+
+      {authScreen === 'signup' && (
+        <SignupScreen
+          onNavigateToLogin={() => setAuthScreen('login')}
+        />
+      )}
+
+      {authScreen === 'forgot-password' && (
+        <View style={styles.comingSoon}>
+          <Text style={[styles.comingSoonText, { color: isDarkMode ? '#fff' : '#000' }]}>
+            Password reset coming soon!
           </Text>
-          <Text style={[styles.subtitle, { color: isDarkMode ? '#ccc' : '#666' }]}>
-            Multi-platform Tesla mileage tracking
+          <Text
+            style={styles.backLink}
+            onPress={() => setAuthScreen('login')}
+          >
+            Back to Login
           </Text>
-          <View style={styles.section}>
-            <Text style={[styles.sectionTitle, { color: isDarkMode ? '#fff' : '#000' }]}>
-              🚀 Getting Started
-            </Text>
-            <Text style={[styles.sectionText, { color: isDarkMode ? '#ccc' : '#666' }]}>
-              This is the foundation for VolTracker - a cross-platform Tesla mileage tracking application.
-            </Text>
-          </View>
-          <View style={styles.section}>
-            <Text style={[styles.sectionTitle, { color: isDarkMode ? '#fff' : '#000' }]}>
-              🔧 Development Ready
-            </Text>
-            <Text style={[styles.sectionText, { color: isDarkMode ? '#ccc' : '#666' }]}>
-              React Native with TypeScript, Web support, and multi-platform project structure configured.
-            </Text>
-          </View>
         </View>
-      </ScrollView>
+      )}
     </SafeAreaView>
   );
 }
@@ -65,41 +97,28 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  scrollView: {
+  loadingContainer: {
     flex: 1,
-  },
-  content: {
-    flex: 1,
-    padding: 24,
+    justifyContent: 'center',
     alignItems: 'center',
   },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginTop: 40,
-    marginBottom: 8,
-  },
-  subtitle: {
+  loadingText: {
+    marginTop: 16,
     fontSize: 16,
-    textAlign: 'center',
-    marginBottom: 40,
   },
-  section: {
-    width: '100%',
-    marginBottom: 24,
-    padding: 16,
-    borderRadius: 8,
-    backgroundColor: 'rgba(0, 123, 255, 0.1)',
+  comingSoon: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 24,
   },
-  sectionTitle: {
+  comingSoonText: {
     fontSize: 18,
-    fontWeight: '600',
-    marginBottom: 8,
+    marginBottom: 16,
   },
-  sectionText: {
-    fontSize: 14,
-    lineHeight: 20,
+  backLink: {
+    color: '#007bff',
+    fontSize: 16,
   },
 });
 

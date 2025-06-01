@@ -80,3 +80,7 @@ web-build/
 # Additional platform specific
 *.web.js.map
 *.native.js.map
+
+# Environment variables
+.env
+.env.local
