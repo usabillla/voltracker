@@ -8,13 +8,12 @@ module.exports = {
     rules: [
       {
         test: /\.(ts|tsx|js|jsx)$/,
-        exclude: /node_modules/,
+        exclude: /node_modules(?!\/react-native-web)/,
         use: {
           loader: 'babel-loader',
           options: {
-            presets: ['@babel/preset-env', '@babel/preset-react', '@babel/preset-typescript'],
+            presets: ['@react-native/babel-preset'],
             plugins: [
-              '@babel/plugin-transform-class-properties',
               '@babel/plugin-transform-runtime',
             ],
           },
