@@ -192,21 +192,29 @@ export class TeslaService {
   static async handleOAuth(): Promise<{ code: string | null; error: string | null }> {
     const authUrl = this.generateAuthUrl();
 
-    return platformSelect({
+    const handler = platformSelect({
       web: async () => {
         // For web, redirect to Tesla OAuth
-        window.location.href = authUrl;
+        if (typeof window !== 'undefined') {
+          window.location.href = authUrl;
+        }
         return { code: null, error: null };
       },
-      mobile: async () => {
+      mobile: async (): Promise<{ code: string | null; error: string | null }> => {
         // For mobile, we'll need to implement in-app browser or deep linking
         // This is a placeholder for now
         return { code: null, error: 'Mobile OAuth not implemented yet' };
       },
-      default: async () => {
+      default: async (): Promise<{ code: string | null; error: string | null }> => {
         return { code: null, error: 'Platform not supported' };
       },
-    })();
+    });
+
+    if (!handler) {
+      return { code: null, error: 'Platform not supported' };
+    }
+
+    return handler();
   }
 
   // Parse OAuth callback URL

@@ -12,13 +12,25 @@ import {
 import { useAuth } from './src/hooks/useAuth';
 import { LoginScreen, SignupScreen } from './src/screens/auth';
 import { DashboardScreen } from './src/screens/dashboard';
+import { TeslaCallback } from './src/components';
 
 type AuthScreen = 'login' | 'signup' | 'forgot-password';
 
 function App(): React.JSX.Element {
   const { user, loading } = useAuth();
   const [authScreen, setAuthScreen] = useState<AuthScreen>('login');
+  const [showTeslaCallback, setShowTeslaCallback] = useState(false);
   const isDarkMode = useColorScheme() === 'dark';
+
+  // Check if this is a Tesla OAuth callback URL
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const url = window.location.href;
+      if (url.includes('/auth/tesla/callback') || url.includes('code=')) {
+        setShowTeslaCallback(true);
+      }
+    }
+  }, []);
 
   const backgroundStyle = {
     backgroundColor: isDarkMode ? '#000' : '#fff',
@@ -38,6 +50,25 @@ function App(): React.JSX.Element {
             Loading VolTracker...
           </Text>
         </View>
+      </SafeAreaView>
+    );
+  }
+
+  // Show Tesla callback handler if needed
+  if (showTeslaCallback) {
+    return (
+      <SafeAreaView style={[styles.container, backgroundStyle]}>
+        <StatusBar
+          barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+          backgroundColor={backgroundStyle.backgroundColor}
+        />
+        <TeslaCallback onComplete={() => {
+          setShowTeslaCallback(false);
+          // Clean up URL
+          if (typeof window !== 'undefined') {
+            window.history.replaceState({}, document.title, window.location.pathname);
+          }
+        }} />
       </SafeAreaView>
     );
   }

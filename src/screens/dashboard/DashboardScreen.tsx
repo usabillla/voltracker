@@ -9,9 +9,11 @@ import {
   Alert,
 } from 'react-native';
 import { useAuth } from '../../hooks/useAuth';
+import { useTesla } from '../../hooks/useTesla';
 
 export const DashboardScreen: React.FC = () => {
   const { user, signOut, loading } = useAuth();
+  const { connectTesla, isConnected, vehicles, loading: teslaLoading } = useTesla();
   const isDark = useColorScheme() === 'dark';
 
   const handleSignOut = async () => {
@@ -77,12 +79,26 @@ export const DashboardScreen: React.FC = () => {
           </Text>
         </View>
 
-        <TouchableOpacity
-          style={[styles.button, styles.connectButton]}
-          onPress={() => Alert.alert('Coming Soon', 'Tesla integration will be available soon!')}
-        >
-          <Text style={styles.buttonText}>Connect Tesla Account</Text>
-        </TouchableOpacity>
+        {!isConnected ? (
+          <TouchableOpacity
+            style={[styles.button, styles.connectButton]}
+            onPress={connectTesla}
+            disabled={teslaLoading}
+          >
+            <Text style={styles.buttonText}>
+              {teslaLoading ? 'Connecting...' : 'Connect Tesla Account'}
+            </Text>
+          </TouchableOpacity>
+        ) : (
+          <View style={styles.card}>
+            <Text style={styles.cardTitle}>🚗 Connected Vehicles</Text>
+            {vehicles.map((vehicle, index) => (
+              <Text key={vehicle.id} style={styles.vehicleText}>
+                {vehicle.display_name} ({vehicle.vin.slice(-6)})
+              </Text>
+            ))}
+          </View>
+        )}
 
         <TouchableOpacity
           style={[styles.button, styles.signOutButton]}
@@ -176,5 +192,10 @@ const getStyles = (isDark: boolean) => StyleSheet.create({
   },
   signOutText: {
     color: '#dc3545',
+  },
+  vehicleText: {
+    fontSize: 14,
+    color: isDark ? '#ccc' : '#666',
+    marginBottom: 4,
   },
 });
