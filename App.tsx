@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 
 import { useAuth } from './src/hooks/useAuth';
-import { LoginScreen, SignupScreen } from './src/screens/auth';
+import { LoginScreen, SignupScreen, ForgotPasswordScreen } from './src/screens/auth';
 import { DashboardScreen } from './src/screens/dashboard';
 import { TeslaCallback } from './src/components';
 
@@ -22,11 +22,11 @@ function App(): React.JSX.Element {
   const [showTeslaCallback, setShowTeslaCallback] = useState(false);
   const isDarkMode = useColorScheme() === 'dark';
 
-  // Check if this is a Tesla OAuth callback URL
+  // Check if this is an OAuth callback URL
   React.useEffect(() => {
     if (typeof window !== 'undefined') {
       const url = window.location.href;
-      if (url.includes('/auth/tesla/callback') || url.includes('code=')) {
+      if (url.includes('/auth/callback') || url.includes('code=')) {
         setShowTeslaCallback(true);
       }
     }
@@ -108,17 +108,9 @@ function App(): React.JSX.Element {
       )}
 
       {authScreen === 'forgot-password' && (
-        <View style={styles.comingSoon}>
-          <Text style={[styles.comingSoonText, { color: isDarkMode ? '#fff' : '#000' }]}>
-            Password reset coming soon!
-          </Text>
-          <Text
-            style={styles.backLink}
-            onPress={() => setAuthScreen('login')}
-          >
-            Back to Login
-          </Text>
-        </View>
+        <ForgotPasswordScreen
+          onNavigateToLogin={() => setAuthScreen('login')}
+        />
       )}
     </SafeAreaView>
   );
@@ -135,20 +127,6 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     marginTop: 16,
-    fontSize: 16,
-  },
-  comingSoon: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 24,
-  },
-  comingSoonText: {
-    fontSize: 18,
-    marginBottom: 16,
-  },
-  backLink: {
-    color: '#007bff',
     fontSize: 16,
   },
 });
