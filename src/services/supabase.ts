@@ -1,10 +1,10 @@
 import { createClient } from '@supabase/supabase-js';
 import { platformSelect } from '../utils/platform';
 import { storage } from '../utils/storage';
+import { getEnvConfig } from '../utils/env';
 
-// Environment variables - these will need to be set
-const supabaseUrl = process.env.REACT_APP_SUPABASE_URL || '';
-const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY || '';
+// Get validated environment configuration
+const envConfig = getEnvConfig();
 
 // Platform-specific storage configuration
 const supabaseOptions = {
@@ -15,7 +15,7 @@ const supabaseOptions = {
   },
 };
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, supabaseOptions);
+export const supabase = createClient(envConfig.supabaseUrl, envConfig.supabaseAnonKey, supabaseOptions);
 
 // Database types
 export interface User {

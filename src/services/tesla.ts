@@ -1,9 +1,16 @@
 import { platformSelect } from '../utils/platform';
+import { getEnvConfig } from '../utils/env';
 
-// Tesla Fleet API Configuration
-const TESLA_CLIENT_ID = process.env.REACT_APP_TESLA_CLIENT_ID || '';
-const TESLA_CLIENT_SECRET = process.env.REACT_APP_TESLA_CLIENT_SECRET || '';
-const TESLA_REDIRECT_URI = process.env.REACT_APP_TESLA_REDIRECT_URI || '';
+// Get validated environment configuration
+const envConfig = getEnvConfig();
+
+// Tesla Fleet API Configuration - NOTE: Client secret should never be in client code
+// This is only for demonstration - in production, token exchange should happen on server
+const TESLA_CLIENT_ID = envConfig.teslaClientId;
+const TESLA_REDIRECT_URI = envConfig.teslaRedirectUri;
+
+// WARNING: This should be moved to server-side in production
+const TESLA_CLIENT_SECRET = process.env.TESLA_CLIENT_SECRET || '';
 
 // Tesla API URLs
 const TESLA_API_BASE = 'https://fleet-api.prd.na.vn.cloud.tesla.com';
