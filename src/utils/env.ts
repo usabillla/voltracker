@@ -61,8 +61,13 @@ export function validateEnvironment(): EnvConfig {
       throw new Error('SUPABASE_URL must be a valid HTTPS URL');
     }
 
-    if (!config.teslaRedirectUri.startsWith('https://')) {
-      throw new Error('TESLA_REDIRECT_URI must be a valid HTTPS URL');
+    // Allow localhost for development, require HTTPS for production
+    const isLocalhost = config.teslaRedirectUri.includes('localhost') || config.teslaRedirectUri.includes('127.0.0.1');
+    const isHttps = config.teslaRedirectUri.startsWith('https://');
+    const isHttpLocalhost = config.teslaRedirectUri.startsWith('http://') && isLocalhost;
+    
+    if (!isHttps && !isHttpLocalhost) {
+      throw new Error('TESLA_REDIRECT_URI must be a valid HTTPS URL (or HTTP localhost for development)');
     }
 
     // Log configuration in development (without sensitive data)

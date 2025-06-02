@@ -72,6 +72,10 @@ export const getStorage = (): StorageInterface => {
   }) || webStorage;
 };
 
+// Default export for AsyncStorage compatibility
+const AsyncStorage = webStorage;
+export default AsyncStorage;
+
 // Unified storage interface
 export const storage = {
   async getItem(key: string): Promise<string | null> {

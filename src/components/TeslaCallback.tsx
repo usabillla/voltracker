@@ -20,7 +20,12 @@ export const TeslaCallback: React.FC<TeslaCallbackProps> = ({ onComplete }) => {
   const isDark = useColorScheme() === 'dark';
 
   useEffect(() => {
+    let hasRun = false;
+    
     const handleCallback = async () => {
+      if (hasRun) return;
+      hasRun = true;
+      
       try {
         // Get the current URL
         const currentUrl = typeof window !== 'undefined' ? window.location.href : '';
@@ -30,7 +35,7 @@ export const TeslaCallback: React.FC<TeslaCallbackProps> = ({ onComplete }) => {
         }
 
         // Parse the callback URL for code or error
-        const { code, error } = TeslaService.parseCallbackUrl(currentUrl);
+        const { code, state, error } = await TeslaService.parseCallbackUrl(currentUrl);
 
         if (error) {
           throw new Error(error);
@@ -43,7 +48,7 @@ export const TeslaCallback: React.FC<TeslaCallbackProps> = ({ onComplete }) => {
         setMessage('Exchanging authorization code for tokens...');
 
         // Exchange the code for tokens and save vehicles
-        await exchangeCodeForTokens(code);
+        await exchangeCodeForTokens(code, state || undefined);
 
         setStatus('success');
         setMessage('Tesla account connected successfully!');
@@ -66,7 +71,7 @@ export const TeslaCallback: React.FC<TeslaCallbackProps> = ({ onComplete }) => {
     };
 
     handleCallback();
-  }, [exchangeCodeForTokens, onComplete]);
+  }, []); // Remove dependencies to prevent infinite loop
 
   const styles = getStyles(isDark);
 

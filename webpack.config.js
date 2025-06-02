@@ -31,11 +31,18 @@ module.exports = {
     extensions: ['.web.js', '.web.ts', '.web.tsx', '.js', '.ts', '.tsx'],
     alias: {
       'react-native$': 'react-native-web',
+      '@react-native-async-storage/async-storage': path.resolve(__dirname, 'src/utils/storage.ts'),
+    },
+    fallback: {
+      "crypto": false,
+      "stream": false,
+      "util": false,
     },
   },
   output: {
     filename: 'bundle.js',
     path: path.resolve(__dirname, 'web-build'),
+    publicPath: '/', // Ensure assets are served from root
     clean: true,
   },
   plugins: [
@@ -50,6 +57,7 @@ module.exports = {
         REACT_APP_SUPABASE_ANON_KEY: JSON.stringify(process.env.REACT_APP_SUPABASE_ANON_KEY),
         REACT_APP_TESLA_CLIENT_ID: JSON.stringify(process.env.REACT_APP_TESLA_CLIENT_ID),
         REACT_APP_TESLA_REDIRECT_URI: JSON.stringify(process.env.REACT_APP_TESLA_REDIRECT_URI),
+        TESLA_CLIENT_SECRET: JSON.stringify(process.env.TESLA_CLIENT_SECRET),
         REACT_APP_VERSION: JSON.stringify(process.env.REACT_APP_VERSION),
         REACT_APP_DOMAIN: JSON.stringify(process.env.REACT_APP_DOMAIN),
         REACT_APP_DEBUG: JSON.stringify(process.env.REACT_APP_DEBUG),
@@ -72,5 +80,6 @@ module.exports = {
     port: 3000,
     hot: true,
     open: true,
+    historyApiFallback: true, // This handles client-side routing
   },
 };
