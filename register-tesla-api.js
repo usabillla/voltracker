@@ -1,28 +1,32 @@
 // Tesla Fleet API Registration Script
 // Run this after configuring the Tesla API Dashboard
 
-const crypto = require('crypto');
+const jwt = require('jsonwebtoken');
 const fs = require('fs');
 
-// Your Tesla API credentials
-const CLIENT_ID = 'd1155240-a0c2-4133-8ae4-b2d7005fa484';
-const CLIENT_SECRET = 'ta-secret._cuz0%wuS&L0OnvH';
-const DOMAIN = 'www.voltracker.com';
+// Load environment variables
+require('dotenv').config();
+
+// Your Tesla API credentials - loaded from environment
+const CLIENT_ID = process.env.REACT_APP_TESLA_CLIENT_ID || process.env.EXPO_PUBLIC_TESLA_CLIENT_ID;
+const CLIENT_SECRET = process.env.TESLA_CLIENT_SECRET;
+const DOMAIN = process.env.REACT_APP_DOMAIN || process.env.EXPO_PUBLIC_DOMAIN || 'www.voltracker.com';
+
+if (!CLIENT_ID || !CLIENT_SECRET) {
+  console.error('❌ Missing required environment variables:');
+  console.error('   TESLA_CLIENT_ID:', CLIENT_ID ? '✓' : '✗');
+  console.error('   TESLA_CLIENT_SECRET:', CLIENT_SECRET ? '✓' : '✗');
+  console.error('\nPlease set these in your .env file');
+  process.exit(1);
+}
 
 // Step 1: Generate Partner Authentication Token
 function generatePartnerToken() {
   const timestamp = Math.floor(Date.now() / 1000);
-  const nonce = crypto.randomBytes(16).toString('hex');
+  const nonce = require('crypto').randomBytes(16).toString('hex');
   
   // Read private key
   const privateKey = fs.readFileSync('private-key.pem', 'utf8');
-  
-  // Create JWT header
-  const header = {
-    alg: 'ES256',
-    typ: 'JWT',
-    kid: 'tesla-fleet-api-key'
-  };
   
   // Create JWT payload
   const payload = {
@@ -34,28 +38,30 @@ function generatePartnerToken() {
     nonce: nonce
   };
   
-  // Encode JWT
-  const encodedHeader = Buffer.from(JSON.stringify(header)).toString('base64url');
-  const encodedPayload = Buffer.from(JSON.stringify(payload)).toString('base64url');
+  // Sign JWT with ES256 algorithm
+  const token = jwt.sign(payload, privateKey, {
+    algorithm: 'ES256',
+    header: {
+      kid: 'tesla-fleet-api-key'
+    }
+  });
   
-  const message = `${encodedHeader}.${encodedPayload}`;
-  
-  // Sign with private key
-  const sign = crypto.createSign('sha256');
-  sign.update(message);
-  const signature = sign.sign(privateKey, 'base64url');
-  
-  return `${message}.${signature}`;
+  return token;
 }
 
 // Step 2: Register with Tesla Fleet API
 async function registerWithTesla() {
   try {
     const partnerToken = generatePartnerToken();
+    console.log('Generated token length:', partnerToken.length);
+    console.log('Token starts with:', partnerToken.substring(0, 50) + '...');
     
     const registerData = {
       domain: DOMAIN
     };
+    
+    console.log('Registering domain:', DOMAIN);
+    console.log('Request data:', JSON.stringify(registerData, null, 2));
     
     const response = await fetch('https://fleet-api.prd.na.vn.cloud.tesla.com/api/1/partner_accounts', {
       method: 'POST',
@@ -134,32 +140,7 @@ async function main() {
   console.log('3. Start building trip tracking features');
 }
 
-// Add Buffer.from base64url support for older Node.js versions
-if (!Buffer.prototype.toString.toString().includes('base64url')) {
-  const originalToString = Buffer.prototype.toString;
-  Buffer.prototype.toString = function(encoding, ...args) {
-    if (encoding === 'base64url') {
-      return originalToString.call(this, 'base64', ...args)
-        .replace(/\+/g, '-')
-        .replace(/\//g, '_')
-        .replace(/=/g, '');
-    }
-    return originalToString.call(this, encoding, ...args);
-  };
-  
-  const originalFrom = Buffer.from;
-  Buffer.from = function(data, encoding, ...args) {
-    if (encoding === 'base64url') {
-      const base64 = data.toString()
-        .replace(/-/g, '+')
-        .replace(/_/g, '/');
-      const padding = base64.length % 4;
-      const paddedBase64 = base64 + '='.repeat(padding ? 4 - padding : 0);
-      return originalFrom.call(this, paddedBase64, 'base64', ...args);
-    }
-    return originalFrom.call(this, data, encoding, ...args);
-  };
-}
+// JWT token generation now handled by jsonwebtoken library
 
 // Run the script
 if (require.main === module) {
