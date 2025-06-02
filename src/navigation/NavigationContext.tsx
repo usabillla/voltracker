@@ -10,6 +10,7 @@ interface NavigationProviderProps {
 
 export const NavigationProvider: React.FC<NavigationProviderProps> = ({ children }) => {
   const [currentRoute, setCurrentRoute] = useState<keyof RootRoutes | null>('login');
+  const [currentParams, setCurrentParams] = useState<any>(null);
   const [history, setHistory] = useState<(keyof RootRoutes)[]>(['login']);
 
   // Initialize route based on platform
@@ -19,7 +20,8 @@ export const NavigationProvider: React.FC<NavigationProviderProps> = ({ children
       const searchParams = new URLSearchParams(window.location.search);
       
       // Handle Tesla OAuth callback
-      if (path.includes('/auth/callback') || searchParams.has('code')) {
+      if (path.includes('/auth/callback') || path.includes('auth/callback') || searchParams.has('code')) {
+        console.log('Tesla callback detected, path:', path, 'params:', Object.fromEntries(searchParams.entries()));
         setCurrentRoute('tesla-callback');
         setHistory(['tesla-callback']);
         return;
@@ -28,21 +30,37 @@ export const NavigationProvider: React.FC<NavigationProviderProps> = ({ children
       // Handle other routes
       const routeName = path.replace('/', '') || 'login';
       const route = routeName as keyof RootRoutes;
+      
+      // Extract URL parameters
+      const params: any = {};
+      searchParams.forEach((value, key) => {
+        params[key] = isNaN(Number(value)) ? value : Number(value);
+      });
+      
       if (route && route !== 'login') {
         setCurrentRoute(route);
+        setCurrentParams(Object.keys(params).length > 0 ? params : null);
         setHistory([route]);
       }
     }
   }, []);
 
-  const navigate = (route: keyof RootRoutes) => {
+  const navigate = <T extends keyof RootRoutes>(route: T, params?: RootRoutes[T]) => {
     if (isWeb && typeof window !== 'undefined') {
       // Update browser URL for web
-      const path = route === 'login' ? '/' : `/${route}`;
+      let path = route === 'login' ? '/' : `/${route}`;
+      if (params && typeof params === 'object') {
+        const searchParams = new URLSearchParams();
+        Object.entries(params).forEach(([key, value]) => {
+          searchParams.set(key, String(value));
+        });
+        path += `?${searchParams.toString()}`;
+      }
       window.history.pushState({}, '', path);
     }
     
     setCurrentRoute(route);
+    setCurrentParams(params || null);
     setHistory(prev => [...prev, route]);
   };
 
@@ -68,6 +86,7 @@ export const NavigationProvider: React.FC<NavigationProviderProps> = ({ children
     goBack,
     canGoBack,
     currentRoute,
+    currentParams,
   };
 
   return (

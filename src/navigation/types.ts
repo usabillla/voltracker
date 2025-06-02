@@ -8,6 +8,8 @@ export type AuthRoutes = {
 
 export type MainRoutes = {
   dashboard: undefined;
+  vehicles: undefined;
+  'vehicle-detail': { vehicleId: number };
   // Future routes will be added here
   // trips: undefined;
   // settings: undefined;
@@ -19,8 +21,12 @@ export type RootRoutes = AuthRoutes & MainRoutes & {
 
 // Navigation context type
 export interface NavigationContextType {
-  navigate: (route: keyof RootRoutes) => void;
+  navigate: <T extends keyof RootRoutes>(
+    route: T,
+    params?: RootRoutes[T]
+  ) => void;
   goBack: () => void;
   canGoBack: () => boolean;
   currentRoute: keyof RootRoutes | null;
+  currentParams: any;
 }

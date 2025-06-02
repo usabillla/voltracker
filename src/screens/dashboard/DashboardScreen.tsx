@@ -10,10 +10,12 @@ import {
 } from 'react-native';
 import { useAuth } from '../../hooks/useAuth';
 import { useTesla } from '../../hooks/useTesla';
+import { useNavigation } from '../../navigation/NavigationContext';
 
 export const DashboardScreen: React.FC = () => {
   const { user, signOut, loading } = useAuth();
-  const { connectTesla, isConnected, vehicles, loading: teslaLoading } = useTesla();
+  const { connectTesla, isConnected, vehicles, selectedVehicle, loading: teslaLoading } = useTesla();
+  const { navigate } = useNavigation();
   const isDark = useColorScheme() === 'dark';
 
   const handleSignOut = async () => {
@@ -44,10 +46,25 @@ export const DashboardScreen: React.FC = () => {
 
       <View style={styles.content}>
         <View style={styles.card}>
-          <Text style={styles.cardTitle}>🚗 Quick Stats</Text>
-          <Text style={styles.cardText}>
-            Your Tesla vehicles and trip data will appear here once you connect your account.
-          </Text>
+          <Text style={styles.cardTitle}>🚗 Active Vehicle</Text>
+          {selectedVehicle ? (
+            <View>
+              <Text style={styles.vehicleText}>
+                {selectedVehicle.display_name}
+              </Text>
+              <Text style={styles.cardText}>
+                Status: {selectedVehicle.state} • VIN: ...{selectedVehicle.vin.slice(-6)}
+              </Text>
+            </View>
+          ) : isConnected ? (
+            <Text style={styles.cardText}>
+              No vehicle selected. Go to Vehicle Management to select your active vehicle.
+            </Text>
+          ) : (
+            <Text style={styles.cardText}>
+              Connect your Tesla account to see your vehicles here.
+            </Text>
+          )}
         </View>
 
         <View style={styles.card}>
@@ -94,6 +111,23 @@ export const DashboardScreen: React.FC = () => {
                 {vehicle.display_name} ({vehicle.vin.slice(-6)})
               </Text>
             ))}
+            <TouchableOpacity
+              style={[styles.button, styles.reconnectButton]}
+              onPress={connectTesla}
+              disabled={teslaLoading}
+            >
+              <Text style={styles.buttonText}>
+                {teslaLoading ? 'Connecting...' : 'Reconnect Tesla Account'}
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.button, styles.vehiclesButton]}
+              onPress={() => navigate('vehicles')}
+            >
+              <Text style={styles.buttonText}>
+                View Vehicle Details
+              </Text>
+            </TouchableOpacity>
           </View>
         )}
 
@@ -176,6 +210,14 @@ const getStyles = (isDark: boolean) => StyleSheet.create({
   },
   connectButton: {
     backgroundColor: '#007bff',
+    marginTop: 8,
+  },
+  reconnectButton: {
+    backgroundColor: '#28a745',
+    marginTop: 12,
+  },
+  vehiclesButton: {
+    backgroundColor: '#6f42c1',
     marginTop: 8,
   },
   signOutButton: {

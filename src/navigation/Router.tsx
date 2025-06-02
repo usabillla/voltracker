@@ -3,6 +3,7 @@ import { useAuth } from '../hooks/useAuth';
 import { useNavigation } from './NavigationContext';
 import { LoginScreen, SignupScreen, ForgotPasswordScreen } from '../screens/auth';
 import { DashboardScreen } from '../screens/dashboard';
+import { VehicleListScreen, VehicleDetailScreen } from '../screens/vehicles';
 import { TeslaCallback } from '../components';
 import { LoadingSpinner } from '../components/shared';
 
@@ -30,6 +31,10 @@ export const Router: React.FC = () => {
   // Authenticated user routes
   if (user) {
     switch (currentRoute) {
+      case 'vehicles':
+        return <VehicleListScreen />;
+      case 'vehicle-detail':
+        return <VehicleDetailScreen />;
       case 'dashboard':
       default:
         return <DashboardScreen />;
