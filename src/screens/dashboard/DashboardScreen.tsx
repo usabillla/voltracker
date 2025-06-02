@@ -26,10 +26,7 @@ export const DashboardScreen: React.FC = () => {
           text: 'Sign Out',
           style: 'destructive',
           onPress: async () => {
-            const { error } = await signOut();
-            if (error) {
-              Alert.alert('Error', error);
-            }
+            await signOut();
           },
         },
       ],
