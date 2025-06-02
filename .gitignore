@@ -86,3 +86,4 @@ web-build/
 .env.local
 # Tesla API Keys
 private-key.pem
+.vercel
