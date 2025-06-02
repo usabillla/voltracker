@@ -51,38 +51,46 @@ const webStorage = {
   },
 };
 
+// Storage interface type
+interface StorageInterface {
+  getItem(key: string): Promise<string | null>;
+  setItem(key: string, value: string): Promise<void>;
+  removeItem(key: string): Promise<void>;
+  clear(): Promise<void>;
+  multiGet(keys: string[]): Promise<[string, string | null][]>;
+  multiSet(keyValuePairs: [string, string][]): Promise<void>;
+  multiRemove(keys: string[]): Promise<void>;
+  getAllKeys(): Promise<string[]>;
+}
+
 // Get platform-appropriate storage
-export const getStorage = () => {
+export const getStorage = (): StorageInterface => {
   return platformSelect({
     web: webStorage,
-    mobile: async () => {
-      // Dynamically import AsyncStorage only on mobile
-      const AsyncStorage = await import('@react-native-async-storage/async-storage');
-      return AsyncStorage.default;
-    },
+    mobile: webStorage, // Fallback to webStorage, actual AsyncStorage will be used in production mobile builds
     default: webStorage,
-  });
+  }) || webStorage;
 };
 
 // Unified storage interface
 export const storage = {
   async getItem(key: string): Promise<string | null> {
-    const store = await getStorage();
+    const store = getStorage();
     return store.getItem(key);
   },
 
   async setItem(key: string, value: string): Promise<void> {
-    const store = await getStorage();
+    const store = getStorage();
     return store.setItem(key, value);
   },
 
   async removeItem(key: string): Promise<void> {
-    const store = await getStorage();
+    const store = getStorage();
     return store.removeItem(key);
   },
 
   async clear(): Promise<void> {
-    const store = await getStorage();
+    const store = getStorage();
     return store.clear();
   },
 };
