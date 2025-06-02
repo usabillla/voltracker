@@ -1,6 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { platformSelect } from '../utils/platform';
-import { storage } from '../utils/storage';
 import { getEnvConfig } from '../utils/env';
 
 // Get validated environment configuration
@@ -9,9 +9,13 @@ const envConfig = getEnvConfig();
 // Platform-specific storage configuration
 const supabaseOptions = {
   auth: {
-    storage: undefined, // Use default localStorage for now
+    storage: platformSelect({
+      web: undefined, // Uses localStorage by default
+      default: AsyncStorage, // Uses AsyncStorage for mobile
+    }),
     autoRefreshToken: true,
     persistSession: true,
+    detectSessionInUrl: false,
   },
 };
 

@@ -12,7 +12,7 @@ import { useTheme } from '../../theme';
 interface ButtonProps {
   title: string;
   onPress: () => void;
-  variant?: 'primary' | 'secondary' | 'outline';
+  variant?: 'primary' | 'secondary' | 'outline' | 'ghost';
   size?: 'small' | 'medium' | 'large';
   loading?: boolean;
   disabled?: boolean;
@@ -60,6 +60,9 @@ export const Button: React.FC<ButtonProps> = ({
         borderWidth: 1,
         borderColor: theme.colors.primary,
       },
+      ghost: {
+        backgroundColor: 'transparent',
+      },
     };
 
     return {
@@ -80,6 +83,7 @@ export const Button: React.FC<ButtonProps> = ({
       primary: { color: theme.colors.white },
       secondary: { color: theme.colors.white },
       outline: { color: theme.colors.primary },
+      ghost: { color: theme.colors.primary },
     };
 
     return {
@@ -98,7 +102,7 @@ export const Button: React.FC<ButtonProps> = ({
       {loading ? (
         <ActivityIndicator
           size="small"
-          color={variant === 'outline' ? theme.colors.primary : theme.colors.white}
+          color={variant === 'outline' || variant === 'ghost' ? theme.colors.primary : theme.colors.white}
         />
       ) : (
         <Text style={[getTextStyle(), textStyle]}>{title}</Text>

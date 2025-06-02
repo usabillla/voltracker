@@ -1,91 +1,69 @@
 import { supabase } from './supabase';
-import type { User } from '@supabase/supabase-js';
+import { AuthError, User, Session } from '@supabase/supabase-js';
 
-export interface AuthState {
+export interface AuthCredentials {
+  email: string;
+  password: string;
+}
+
+export interface AuthResponse {
   user: User | null;
-  loading: boolean;
-  error: string | null;
+  session: Session | null;
+  error: AuthError | null;
 }
 
 export class AuthService {
-  // Sign up with email and password
-  static async signUp(email: string, password: string) {
-    try {
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-      });
-
-      if (error) {throw error;}
-      return { data, error: null };
-    } catch (error) {
-      return { data: null, error: error instanceof Error ? error.message : 'Signup failed' };
-    }
+  // Sign up new user
+  static async signUp(credentials: AuthCredentials): Promise<AuthResponse> {
+    const { data, error } = await supabase.auth.signUp({
+      email: credentials.email,
+      password: credentials.password,
+    });
+    
+    return {
+      user: data.user,
+      session: data.session,
+      error: error,
+    };
   }
 
-  // Sign in with email and password
-  static async signIn(email: string, password: string) {
-    try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (error) {throw error;}
-      return { data, error: null };
-    } catch (error) {
-      return { data: null, error: error instanceof Error ? error.message : 'Sign in failed' };
-    }
+  // Sign in existing user
+  static async signIn(credentials: AuthCredentials): Promise<AuthResponse> {
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: credentials.email,
+      password: credentials.password,
+    });
+    
+    return {
+      user: data.user,
+      session: data.session,
+      error: error,
+    };
   }
 
-  // Sign out
-  static async signOut() {
-    try {
-      const { error } = await supabase.auth.signOut();
-      if (error) {throw error;}
-      return { error: null };
-    } catch (error) {
-      return { error: error instanceof Error ? error.message : 'Sign out failed' };
-    }
+  // Sign out user
+  static async signOut(): Promise<{ error: AuthError | null }> {
+    const { error } = await supabase.auth.signOut();
+    return { error };
+  }
+
+  // Reset password
+  static async resetPassword(email: string): Promise<{ error: AuthError | null }> {
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/auth/reset-password`,
+    });
+    return { error };
+  }
+
+  // Get current session
+  static async getSession(): Promise<{ session: Session | null; error: AuthError | null }> {
+    const { data, error } = await supabase.auth.getSession();
+    return { session: data.session, error };
   }
 
   // Get current user
-  static async getCurrentUser() {
-    try {
-      const { data: { user }, error } = await supabase.auth.getUser();
-      if (error) {throw error;}
-      return { user, error: null };
-    } catch (error) {
-      return { user: null, error: error instanceof Error ? error.message : 'Failed to get user' };
-    }
-  }
-
-  // Send password reset email
-  static async resetPassword(email: string) {
-    try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email);
-      if (error) {throw error;}
-      return { error: null };
-    } catch (error) {
-      return { error: error instanceof Error ? error.message : 'Password reset failed' };
-    }
-  }
-
-  // Update password
-  static async updatePassword(password: string) {
-    try {
-      const { error } = await supabase.auth.updateUser({ password });
-      if (error) {throw error;}
-      return { error: null };
-    } catch (error) {
-      return { error: error instanceof Error ? error.message : 'Password update failed' };
-    }
-  }
-
-  // Listen to auth state changes
-  static onAuthStateChange(callback: (user: User | null) => void) {
-    return supabase.auth.onAuthStateChange((event, session) => {
-      callback(session?.user ?? null);
-    });
+  static async getUser(): Promise<{ user: User | null; error: AuthError | null }> {
+    const { data, error } = await supabase.auth.getUser();
+    return { user: data.user, error };
   }
 }

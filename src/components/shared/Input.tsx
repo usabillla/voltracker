@@ -1,26 +1,34 @@
 import React from 'react';
 import {
   TextInput,
+  View,
   StyleSheet,
   ViewStyle,
   TextStyle,
   TextInputProps,
 } from 'react-native';
 import { useTheme } from '../../theme';
+import { Text } from './Text';
 
 interface InputProps extends Omit<TextInputProps, 'style'> {
+  label?: string;
+  error?: string;
   style?: ViewStyle;
   inputTextStyle?: TextStyle;
-  error?: boolean;
 }
 
 export const Input: React.FC<InputProps> = ({
+  label,
+  error,
   style,
   inputTextStyle,
-  error = false,
   ...props
 }) => {
   const theme = useTheme();
+
+  const containerStyle: ViewStyle = {
+    marginBottom: theme.spacing.md,
+  };
 
   const inputStyle: ViewStyle = {
     borderWidth: 1,
@@ -36,12 +44,33 @@ export const Input: React.FC<InputProps> = ({
     color: theme.colors.text,
   };
 
+  const labelStyle: TextStyle = {
+    fontSize: theme.typography.body.fontSize,
+    color: theme.colors.text,
+    marginBottom: theme.spacing.xs,
+    fontWeight: '500',
+  };
+
+  const errorStyle: TextStyle = {
+    fontSize: theme.typography.caption.fontSize,
+    color: theme.colors.error,
+    marginTop: theme.spacing.xs,
+  };
+
   return (
-    <TextInput
-      style={[inputStyle, textStyle, style, inputTextStyle]}
-      placeholderTextColor={theme.colors.textSecondary}
-      selectionColor={theme.colors.primary}
-      {...props}
-    />
+    <View style={[containerStyle, style]}>
+      {label && (
+        <Text style={labelStyle}>{label}</Text>
+      )}
+      <TextInput
+        style={[inputStyle, textStyle, inputTextStyle]}
+        placeholderTextColor={theme.colors.textSecondary}
+        selectionColor={theme.colors.primary}
+        {...props}
+      />
+      {error && (
+        <Text style={errorStyle}>{error}</Text>
+      )}
+    </View>
   );
 };

@@ -1,174 +1,95 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  Alert,
-  KeyboardAvoidingView,
-  ScrollView,
-  useColorScheme,
-} from 'react-native';
+import { Screen, Button, Input, Text } from '../../components/shared';
 import { useAuth } from '../../hooks/useAuth';
-import { platformSelect } from '../../utils/platform';
+import { useNavigation } from '../../navigation/NavigationContext';
+import { validateEmail, validatePassword } from '../../utils/validation';
 
-interface LoginScreenProps {
-  onNavigateToSignup: () => void;
-  onNavigateToForgotPassword: () => void;
-}
-
-export const LoginScreen: React.FC<LoginScreenProps> = ({
-  onNavigateToSignup,
-  onNavigateToForgotPassword,
-}) => {
+export const LoginScreen: React.FC = () => {
+  const navigation = useNavigation();
+  const { signIn, loading, error, clearError } = useAuth();
+  
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { signIn, loading } = useAuth();
-  const isDark = useColorScheme() === 'dark';
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
 
-  const handleSignIn = async () => {
-    if (!email || !password) {
-      Alert.alert('Error', 'Please fill in all fields');
-      return;
+  const validateForm = () => {
+    let isValid = true;
+    
+    const emailValidation = validateEmail(email);
+    if (!emailValidation.isValid) {
+      setEmailError(emailValidation.error);
+      isValid = false;
+    } else {
+      setEmailError('');
     }
+    
+    const passwordValidation = validatePassword(password);
+    if (!passwordValidation.isValid) {
+      setPasswordError(passwordValidation.error);
+      isValid = false;
+    } else {
+      setPasswordError('');
+    }
+    
+    return isValid;
+  };
 
-    const { error } = await signIn(email, password);
-    if (error) {
-      Alert.alert('Sign In Failed', error);
+  const handleLogin = async () => {
+    if (validateForm()) {
+      await signIn({ email, password });
     }
   };
 
-  const styles = getStyles(isDark);
-
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={platformSelect({ ios: 'padding', default: undefined })}
-    >
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        <View style={styles.header}>
-          <Text style={styles.title}>Welcome to VolTracker</Text>
-          <Text style={styles.subtitle}>Sign in to your account</Text>
-        </View>
-
-        <View style={styles.form}>
-          <TextInput
-            style={styles.input}
-            placeholder="Email"
-            placeholderTextColor={isDark ? '#666' : '#999'}
-            value={email}
-            onChangeText={setEmail}
-            keyboardType="email-address"
-            autoCapitalize="none"
-            autoCorrect={false}
-          />
-
-          <TextInput
-            style={styles.input}
-            placeholder="Password"
-            placeholderTextColor={isDark ? '#666' : '#999'}
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-            autoCapitalize="none"
-          />
-
-          <TouchableOpacity
-            style={[styles.button, loading && styles.buttonDisabled]}
-            onPress={handleSignIn}
-            disabled={loading}
-          >
-            <Text style={styles.buttonText}>
-              {loading ? 'Signing In...' : 'Sign In'}
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.linkButton}
-            onPress={onNavigateToForgotPassword}
-          >
-            <Text style={styles.linkText}>Forgot Password?</Text>
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.footer}>
-          <Text style={styles.footerText}>Don't have an account? </Text>
-          <TouchableOpacity onPress={onNavigateToSignup}>
-            <Text style={styles.linkText}>Sign Up</Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+    <Screen padding>
+      <Text variant="heading1" style={{ marginBottom: 32 }}>Welcome Back</Text>
+      
+      <Input
+        label="Email"
+        value={email}
+        onChangeText={setEmail}
+        keyboardType="email-address"
+        autoCapitalize="none"
+        error={emailError}
+        onFocus={clearError}
+      />
+      
+      <Input
+        label="Password"
+        value={password}
+        onChangeText={setPassword}
+        secureTextEntry
+        error={passwordError}
+        onFocus={clearError}
+      />
+      
+      {error && (
+        <Text variant="body" color="error" style={{ marginBottom: 16 }}>
+          {error}
+        </Text>
+      )}
+      
+      <Button
+        title="Sign In"
+        onPress={handleLogin}
+        loading={loading}
+        disabled={loading}
+        style={{ marginBottom: 16 }}
+      />
+      
+      <Button
+        title="Forgot Password?"
+        variant="ghost"
+        onPress={() => navigation.navigate('forgot-password')}
+        style={{ marginBottom: 16 }}
+      />
+      
+      <Button
+        title="Don't have an account? Sign Up"
+        variant="ghost"
+        onPress={() => navigation.navigate('signup')}
+      />
+    </Screen>
   );
 };
-
-const getStyles = (isDark: boolean) => StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: isDark ? '#000' : '#fff',
-  },
-  scrollContent: {
-    flexGrow: 1,
-    justifyContent: 'center',
-    padding: 24,
-  },
-  header: {
-    alignItems: 'center',
-    marginBottom: 40,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: isDark ? '#fff' : '#000',
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: isDark ? '#ccc' : '#666',
-  },
-  form: {
-    marginBottom: 32,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: isDark ? '#333' : '#ddd',
-    backgroundColor: isDark ? '#1a1a1a' : '#f8f9fa',
-    borderRadius: 8,
-    padding: 16,
-    fontSize: 16,
-    color: isDark ? '#fff' : '#000',
-    marginBottom: 16,
-  },
-  button: {
-    backgroundColor: '#007bff',
-    borderRadius: 8,
-    padding: 16,
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  buttonDisabled: {
-    opacity: 0.6,
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  linkButton: {
-    alignItems: 'center',
-  },
-  linkText: {
-    color: '#007bff',
-    fontSize: 14,
-  },
-  footer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  footerText: {
-    color: isDark ? '#ccc' : '#666',
-    fontSize: 14,
-  },
-});

@@ -1,86 +1,125 @@
-import { useState, useEffect } from 'react';
-import type { User } from '@supabase/supabase-js';
-import { AuthService, type AuthState } from '../services/auth';
+import { useEffect, useState } from 'react';
+import { User, Session, AuthError } from '@supabase/supabase-js';
+import { supabase } from '../services/supabase';
+import { AuthService, AuthCredentials } from '../services/auth';
 
-export const useAuth = () => {
-  const [authState, setAuthState] = useState<AuthState>({
+interface AuthState {
+  user: User | null;
+  session: Session | null;
+  loading: boolean;
+  error: string | null;
+}
+
+interface AuthActions {
+  signIn: (credentials: AuthCredentials) => Promise<void>;
+  signUp: (credentials: AuthCredentials) => Promise<void>;
+  signOut: () => Promise<void>;
+  resetPassword: (email: string) => Promise<void>;
+  clearError: () => void;
+}
+
+export function useAuth(): AuthState & AuthActions {
+  const [state, setState] = useState<AuthState>({
     user: null,
+    session: null,
     loading: true,
     error: null,
   });
 
   useEffect(() => {
-    // Get initial user
-    AuthService.getCurrentUser().then(({ user, error }) => {
-      setAuthState({
-        user,
+    // Get initial session
+    const getInitialSession = async () => {
+      const { session, error } = await AuthService.getSession();
+      setState(prev => ({
+        ...prev,
+        session,
+        user: session?.user || null,
         loading: false,
-        error,
-      });
-    });
+        error: error?.message || null,
+      }));
+    };
+
+    getInitialSession();
 
     // Listen for auth changes
-    const { data: { subscription } } = AuthService.onAuthStateChange((user: User | null) => {
-      setAuthState(prev => ({
-        ...prev,
-        user,
-        loading: false,
-        error: null,
-      }));
-    });
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        setState(prev => ({
+          ...prev,
+          session,
+          user: session?.user || null,
+          loading: false,
+        }));
+      }
+    );
 
     return () => subscription.unsubscribe();
   }, []);
 
-  const signUp = async (email: string, password: string) => {
-    setAuthState(prev => ({ ...prev, loading: true, error: null }));
-    const { data, error } = await AuthService.signUp(email, password);
-
-    if (error) {
-      setAuthState(prev => ({ ...prev, loading: false, error }));
-    } else {
-      setAuthState(prev => ({ ...prev, loading: false, error: null }));
-    }
-
-    return { data, error };
+  const signIn = async (credentials: AuthCredentials) => {
+    setState(prev => ({ ...prev, loading: true, error: null }));
+    
+    const { user, session, error } = await AuthService.signIn(credentials);
+    
+    setState(prev => ({
+      ...prev,
+      user,
+      session,
+      loading: false,
+      error: error?.message || null,
+    }));
   };
 
-  const signIn = async (email: string, password: string) => {
-    setAuthState(prev => ({ ...prev, loading: true, error: null }));
-    const { data, error } = await AuthService.signIn(email, password);
-
-    if (error) {
-      setAuthState(prev => ({ ...prev, loading: false, error }));
-    } else {
-      setAuthState(prev => ({ ...prev, loading: false, error: null }));
-    }
-
-    return { data, error };
+  const signUp = async (credentials: AuthCredentials) => {
+    setState(prev => ({ ...prev, loading: true, error: null }));
+    
+    const { user, session, error } = await AuthService.signUp(credentials);
+    
+    setState(prev => ({
+      ...prev,
+      user,
+      session,
+      loading: false,
+      error: error?.message || null,
+    }));
   };
 
   const signOut = async () => {
-    setAuthState(prev => ({ ...prev, loading: true }));
+    setState(prev => ({ ...prev, loading: true, error: null }));
+    
     const { error } = await AuthService.signOut();
-
-    if (error) {
-      setAuthState(prev => ({ ...prev, loading: false, error }));
-    } else {
-      setAuthState({ user: null, loading: false, error: null });
-    }
-
-    return { error };
+    
+    setState(prev => ({
+      ...prev,
+      user: null,
+      session: null,
+      loading: false,
+      error: error?.message || null,
+    }));
   };
 
   const resetPassword = async (email: string) => {
+    setState(prev => ({ ...prev, loading: true, error: null }));
+    
     const { error } = await AuthService.resetPassword(email);
-    return { error };
+    
+    setState(prev => ({
+      ...prev,
+      loading: false,
+      error: error?.message || null,
+    }));
+  };
+
+  const clearError = () => {
+    setState(prev => ({ ...prev, error: null }));
   };
 
   return {
-    ...authState,
-    signUp,
+    ...state,
     signIn,
+    signUp,
     signOut,
     resetPassword,
+    clearError,
   };
-};
+}
