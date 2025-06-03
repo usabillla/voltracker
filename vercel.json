@@ -2,25 +2,11 @@
   "functions": {
     "api/beta-signup.js": {
       "runtime": "nodejs18.x"
+    },
+    "api/analytics.js": {
+      "runtime": "nodejs18.x"
     }
   },
-  "routes": [
-    {
-      "src": "/.well-known/(.*)",
-      "dest": "/.well-known/$1",
-      "headers": {
-        "Content-Type": "text/plain; charset=utf-8"
-      }
-    },
-    {
-      "src": "/api/(.*)",
-      "dest": "/api/$1"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/$1"
-    }
-  ],
   "headers": [
     {
       "source": "/(.*)",
