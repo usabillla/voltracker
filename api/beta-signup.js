@@ -15,9 +15,14 @@ const corsHeaders = {
 };
 
 export default async function handler(req, res) {
+  // Set CORS headers for all requests
+  Object.keys(corsHeaders).forEach(key => {
+    res.setHeader(key, corsHeaders[key]);
+  });
+
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
-    return res.status(200).setHeader(corsHeaders).end();
+    return res.status(200).end();
   }
 
   if (req.method !== 'POST') {

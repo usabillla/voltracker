@@ -7,14 +7,24 @@ const supabase = createClient(
 );
 
 export default async function handler(req, res) {
-  // Basic authentication (you should use proper auth in production)
-  const authHeader = req.headers.authorization;
-  if (!authHeader || authHeader !== `Bearer ${process.env.ANALYTICS_API_KEY}`) {
-    return res.status(401).json({ error: 'Unauthorized' });
+  // Set CORS headers
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+
+  // Handle CORS preflight
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
   }
 
   if (req.method !== 'GET') {
     return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  // Basic authentication (you should use proper auth in production)
+  const authHeader = req.headers.authorization;
+  if (!authHeader || authHeader !== `Bearer ${process.env.ANALYTICS_API_KEY}`) {
+    return res.status(401).json({ error: 'Unauthorized' });
   }
 
   try {
