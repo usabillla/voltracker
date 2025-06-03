@@ -110,8 +110,8 @@ export const useTesla = () => {
 
     try {
       console.log('Starting token exchange...');
-      // Exchange code for tokens
-      const { tokens, error: tokenError } = await TeslaService.exchangeCodeForTokens(code, state);
+      // Exchange code for tokens with user ID for secure storage
+      const { tokens, error: tokenError } = await TeslaService.exchangeCodeForTokens(code, user.id, state);
 
       if (tokenError || !tokens) {
         console.error('Token exchange failed:', tokenError);

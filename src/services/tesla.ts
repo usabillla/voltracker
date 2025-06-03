@@ -1,7 +1,7 @@
 import { platformSelect } from '../utils/platform';
 import { getEnvConfig } from '../utils/env';
 import { SecureStorage } from './secureStorage';
-import { validateTeslaToken, logSecurityEvent, sanitizeString } from '../utils/security';
+import { validateTeslaToken, logSecurityEvent, sanitizeString, validateOAuthState } from '../utils/security';
 
 // Get validated environment configuration
 const envConfig = getEnvConfig();
@@ -122,7 +122,7 @@ export class TeslaService {
   }
 
   // Exchange authorization code for tokens via backend proxy
-  static async exchangeCodeForTokens(code: string, state?: string): Promise<{ tokens: TeslaTokens | null; error: string | null }> {
+  static async exchangeCodeForTokens(code: string, userId: string, state?: string): Promise<{ tokens: TeslaTokens | null; error: string | null }> {
     try {
       console.log('Starting token exchange with code:', code.substring(0, 10) + '...');
       
@@ -172,7 +172,10 @@ export class TeslaService {
         throw new Error('Invalid token structure received from Tesla');
       }
 
-      logSecurityEvent('tesla_token_exchange_success', { tokenType: tokens.token_type });
+      // Store tokens securely with encryption
+      await SecureStorage.storeTeslaTokens(tokens, userId);
+
+      logSecurityEvent('tesla_token_exchange_success', { tokenType: tokens.token_type, userId });
       return { tokens, error: null };
     } catch (error) {
       console.error('Token exchange error:', error);
@@ -413,7 +416,7 @@ export class TeslaService {
     return handler();
   }
 
-  // Parse OAuth callback URL with state validation
+  // Parse OAuth callback URL with enhanced state validation
   static async parseCallbackUrl(url: string): Promise<{ code: string | null; state: string | null; error: string | null }> {
     try {
       const urlObj = new URL(url);
@@ -422,38 +425,50 @@ export class TeslaService {
       const error = urlObj.searchParams.get('error');
 
       if (error) {
+        logSecurityEvent('tesla_oauth_error', { error: sanitizeString(error) });
         return { code: null, state, error: `OAuth error: ${error}` };
       }
 
       if (!code) {
+        logSecurityEvent('tesla_oauth_missing_code', {});
         return { code: null, state, error: 'No authorization code received' };
       }
 
       if (!state) {
+        logSecurityEvent('tesla_oauth_missing_state', {});
         return { code: null, state, error: 'No state parameter received' };
       }
 
-      // Validate state parameter using secure storage
+      // Enhanced state validation using security utility
       const storedState = await SecureStorage.getOAuthState();
-
-      if (!storedState || storedState !== state) {
-        // In development, allow proceeding but log the warning
-        console.warn('State validation failed - this should not happen in production');
-        console.log('Stored state:', storedState);
-        console.log('Received state:', state);
-        // For development testing, we'll skip state validation
-        console.log('Skipping state validation for development testing');
+      const stateValidation = validateOAuthState(state, storedState);
+      
+      if (!stateValidation.isValid) {
+        logSecurityEvent('tesla_oauth_state_validation_failed', { 
+          error: stateValidation.error,
+          hasStoredState: !!storedState 
+        });
+        
+        // Clear potentially compromised state
+        await SecureStorage.clearOAuthState();
+        
+        return { code: null, state, error: stateValidation.error || 'State validation failed' };
       }
 
       // Clear stored state after successful validation
       await SecureStorage.clearOAuthState();
+      
+      logSecurityEvent('tesla_oauth_callback_success', { hasCode: !!code, hasState: !!state });
 
       return { code, state, error: null };
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to parse callback URL';
+      logSecurityEvent('tesla_oauth_callback_parse_error', { error: errorMessage });
+      
       return {
         code: null,
         state: null,
-        error: error instanceof Error ? error.message : 'Failed to parse callback URL',
+        error: errorMessage,
       };
     }
   }

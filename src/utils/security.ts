@@ -289,6 +289,86 @@ export function logSecurityEvent(event: string, details: Record<string, any>): v
 }
 
 /**
+ * Simple encryption/decryption for client-side token storage
+ * Note: This is basic obfuscation, not cryptographically secure
+ * For production, use proper encryption libraries
+ */
+function simpleEncrypt(text: string, key: string): string {
+  let result = '';
+  for (let i = 0; i < text.length; i++) {
+    const textChar = text.charCodeAt(i);
+    const keyChar = key.charCodeAt(i % key.length);
+    result += String.fromCharCode(textChar ^ keyChar);
+  }
+  return btoa(result);
+}
+
+function simpleDecrypt(encryptedText: string, key: string): string {
+  try {
+    const encrypted = atob(encryptedText);
+    let result = '';
+    for (let i = 0; i < encrypted.length; i++) {
+      const encryptedChar = encrypted.charCodeAt(i);
+      const keyChar = key.charCodeAt(i % key.length);
+      result += String.fromCharCode(encryptedChar ^ keyChar);
+    }
+    return result;
+  } catch {
+    throw new Error('Failed to decrypt token data');
+  }
+}
+
+/**
+ * Generate encryption key based on device/browser characteristics
+ */
+function generateDeviceKey(): string {
+  const userAgent = platformSelect({
+    web: () => {
+      if (typeof navigator !== 'undefined' && navigator.userAgent) {
+        return navigator.userAgent.slice(0, 20);
+      }
+      return 'web_unknown';
+    },
+    default: () => 'mobile_app',
+  });
+
+  const hostname = platformSelect({
+    web: () => {
+      if (typeof window !== 'undefined' && window.location) {
+        return window.location.hostname;
+      }
+      return 'localhost';
+    },
+    default: () => 'voltracker_mobile',
+  });
+
+  const components = [
+    userAgent,
+    hostname,
+    'voltracker_secure_key',
+    new Date().getFullYear().toString(),
+  ];
+  
+  return components.join('_').slice(0, 32);
+}
+
+/**
+ * Encrypt sensitive data for storage
+ */
+export function encryptForStorage(data: string): string {
+  const key = generateDeviceKey();
+  return simpleEncrypt(data, key);
+}
+
+/**
+ * Decrypt sensitive data from storage
+ */
+export function decryptFromStorage(encryptedData: string): string {
+  const key = generateDeviceKey();
+  return simpleDecrypt(encryptedData, key);
+}
+
+/**
  * Validate Tesla token structure for security
  */
 export function validateTeslaToken(token: any): ValidationResult {
@@ -311,6 +391,29 @@ export function validateTeslaToken(token: any): ValidationResult {
   // Validate expiry
   if (typeof token.expires_in !== 'number' || token.expires_in <= 0) {
     return { isValid: false, error: 'Invalid token expiry' };
+  }
+
+  return { isValid: true };
+}
+
+/**
+ * Enhanced CSRF state validation
+ */
+export function validateOAuthState(receivedState: string, storedState: string | null): ValidationResult {
+  if (!receivedState) {
+    return { isValid: false, error: 'No state parameter received' };
+  }
+
+  if (!storedState) {
+    return { isValid: false, error: 'No stored state found for validation' };
+  }
+
+  if (!secureCompare(receivedState, storedState)) {
+    logSecurityEvent('oauth_state_mismatch', { 
+      receivedLength: receivedState.length,
+      storedLength: storedState.length 
+    });
+    return { isValid: false, error: 'State parameter validation failed' };
   }
 
   return { isValid: true };
