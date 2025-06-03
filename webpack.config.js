@@ -78,8 +78,17 @@ module.exports = {
     },
     compress: true,
     port: 3000,
+    host: '0.0.0.0',
     hot: true,
+    liveReload: true,
     open: true,
-    historyApiFallback: true, // This handles client-side routing
+    historyApiFallback: true,
+    allowedHosts: 'all',
+    client: {
+      webSocketURL: 'auto://0.0.0.0:0/ws',
+      reconnect: 3,
+      logging: 'warn',
+    },
+    webSocketServer: 'ws',
   },
 };

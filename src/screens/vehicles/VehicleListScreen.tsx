@@ -139,7 +139,24 @@ export const VehicleListScreen: React.FC = () => {
         borderBottomWidth: 1,
         borderBottomColor: '#f0f0f0'
       }}>
-        <Text variant="h1" style={{ marginBottom: 8 }}>
+        <View style={{ 
+          flexDirection: 'row', 
+          alignItems: 'center', 
+          justifyContent: 'space-between',
+          marginBottom: 8
+        }}>
+          <Button
+            title="← Dashboard"
+            variant="ghost"
+            onPress={() => navigate('dashboard')}
+            style={{ 
+              paddingVertical: 8,
+              paddingHorizontal: 12,
+              borderRadius: 8
+            }}
+          />
+        </View>
+        <Text variant="heading1" style={{ marginBottom: 8 }}>
           Your Tesla Vehicles
         </Text>
         <Text variant="body" color="secondary">
