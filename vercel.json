@@ -1,10 +1,10 @@
 {
   "functions": {
     "api/beta-signup.js": {
-      "runtime": "nodejs18.x"
+      "runtime": "@vercel/node"
     },
     "api/analytics.js": {
-      "runtime": "nodejs18.x"
+      "runtime": "@vercel/node"
     }
   },
   "headers": [
