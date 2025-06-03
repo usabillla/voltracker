@@ -76,6 +76,11 @@ yarn-error.log
 
 # Web build
 web-build/
+# Build artifacts in root (should be cleaned up)
+bundle.js
+*.bundle.js
+bundle.js.LICENSE.txt
+index.html
 
 # Additional platform specific
 *.web.js.map
@@ -86,4 +91,5 @@ web-build/
 .env.local
 # Tesla API Keys
 private-key.pem
+public-key.pem
 .vercel
