@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import { TeslaService } from '../services/tesla';
 import { useTesla } from '../hooks/useTesla';
+import { useAuth } from '../hooks/useAuth';
 
 interface TeslaCallbackProps {
   onComplete: () => void;
@@ -16,15 +17,35 @@ interface TeslaCallbackProps {
 export const TeslaCallback: React.FC<TeslaCallbackProps> = ({ onComplete }) => {
   const [status, setStatus] = useState<'processing' | 'success' | 'error'>('processing');
   const [message, setMessage] = useState('Processing Tesla authentication...');
+  const [hasProcessed, setHasProcessed] = useState(false);
   const { exchangeCodeForTokens } = useTesla();
+  const { user, loading: authLoading } = useAuth();
   const isDark = useColorScheme() === 'dark';
 
   useEffect(() => {
-    let hasRun = false;
-    
     const handleCallback = async () => {
-      if (hasRun) return;
-      hasRun = true;
+      // Prevent multiple executions
+      if (hasProcessed || status !== 'processing') {
+        return;
+      }
+      
+      // Wait for user authentication to be restored
+      if (authLoading) {
+        setMessage('Restoring user session...');
+        return;
+      }
+      
+      if (!user) {
+        setStatus('error');
+        setMessage('User session not found. Please log in again.');
+        setHasProcessed(true);
+        setTimeout(() => {
+          onComplete();
+        }, 3000);
+        return;
+      }
+      
+      setHasProcessed(true);
       
       try {
         // Get the current URL
@@ -71,7 +92,7 @@ export const TeslaCallback: React.FC<TeslaCallbackProps> = ({ onComplete }) => {
     };
 
     handleCallback();
-  }, []); // Remove dependencies to prevent infinite loop
+  }, [authLoading, user]); // Add dependencies to re-run when auth state changes
 
   const styles = getStyles(isDark);
 
