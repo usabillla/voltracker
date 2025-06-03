@@ -215,67 +215,11 @@ export class TeslaService {
     }
   }
 
-  // Get vehicles list - tries all regions automatically
+  // Get vehicles list - uses proxy that handles both real and mock API
   static async getVehicles(accessToken: string): Promise<{ vehicles: TeslaVehicle[] | null; error: string | null }> {
-    const regions: TeslaRegion[] = ['na', 'eu', 'ap'];
-    let lastError: string | null = null;
-
-    for (const region of regions) {
-      try {
-        console.log(`Trying Tesla ${region.toUpperCase()} region...`);
-        const apiBase = getTeslaApiBase(region);
-        const response = await fetch(`${apiBase}/api/1/vehicles`, {
-          headers: {
-            'Authorization': `Bearer ${accessToken}`,
-            'Content-Type': 'application/json',
-          },
-        });
-
-        if (!response.ok) {
-          if (response.status === 401) {
-            // Token issue, don't try other regions
-            return { vehicles: null, error: 'Access token expired' };
-          }
-          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
-
-        const data = await response.json();
-        console.log(`Found vehicles in ${region.toUpperCase()} region:`, data.response?.length || 0);
-        return { vehicles: data.response, error: null };
-      } catch (error) {
-        lastError = error instanceof Error ? error.message : 'Failed to fetch vehicles';
-        console.log(`${region.toUpperCase()} region failed:`, lastError);
-        continue;
-      }
-    }
-
-    return {
-      vehicles: null,
-      error: `Failed to fetch vehicles from all regions. Last error: ${lastError}`,
-    };
-  }
-
-  // Get comprehensive vehicle data (charge state, drive state, vehicle state, etc.)
-  static async getVehicleData(vehicleId: number, accessToken: string, region: TeslaRegion = 'na'): Promise<{ vehicleData: any | null; error: string | null }> {
     try {
-      // Check if this is a test token - use mock data for development/testing
-      if (accessToken.startsWith('test_')) {
-        console.log('Using mock Tesla API data for testing');
-        const { MockTeslaAPI } = await import('./tesla.mock');
-        const mockData = MockTeslaAPI.getVehicleData(vehicleId);
-        
-        if (!mockData) {
-          throw new Error('Mock vehicle not found');
-        }
-        
-        // Simulate network delay
-        await new Promise(resolve => setTimeout(resolve, 500));
-        
-        return { vehicleData: mockData, error: null };
-      }
-
-      const apiBase = getTeslaApiBase(region);
-      const response = await fetch(`${apiBase}/api/1/vehicles/${vehicleId}/vehicle_data`, {
+      console.log('Fetching vehicles via proxy');
+      const response = await fetch('/api/tesla/vehicles', {
         headers: {
           'Authorization': `Bearer ${accessToken}`,
           'Content-Type': 'application/json',
@@ -284,15 +228,50 @@ export class TeslaService {
 
       if (!response.ok) {
         if (response.status === 401) {
-          throw new Error('Access token expired');
+          return { vehicles: null, error: 'Access token expired' };
         }
-        if (response.status === 408) {
-          throw new Error('Vehicle is asleep. Try waking it up first.');
-        }
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        
+        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+        throw new Error(errorData.error_description || errorData.error || `HTTP ${response.status}: ${response.statusText}`);
       }
 
       const data = await response.json();
+      console.log('Vehicles loaded:', data.response?.length || 0);
+      return { vehicles: data.response, error: null };
+    } catch (error) {
+      return {
+        vehicles: null,
+        error: error instanceof Error ? error.message : 'Failed to fetch vehicles',
+      };
+    }
+  }
+
+  // Get comprehensive vehicle data (charge state, drive state, vehicle state, etc.)
+  static async getVehicleData(vehicleId: number, accessToken: string, region: TeslaRegion = 'na'): Promise<{ vehicleData: any | null; error: string | null }> {
+    try {
+      console.log('Fetching vehicle data via proxy for vehicle:', vehicleId);
+      
+      const response = await fetch(`/api/tesla/vehicles/${vehicleId}/vehicle_data`, {
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          return { vehicleData: null, error: 'Access token expired' };
+        }
+        if (response.status === 408) {
+          return { vehicleData: null, error: 'Vehicle is asleep. Try waking it up first.' };
+        }
+        
+        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+        throw new Error(errorData.error_description || errorData.error || `HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      console.log('Vehicle data loaded successfully');
       return { vehicleData: data.response, error: null };
     } catch (error) {
       return {

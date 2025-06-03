@@ -8,6 +8,7 @@ import {
   useColorScheme,
   Alert,
 } from 'react-native';
+import { VehicleImage } from '../../components/shared';
 import { useAuth } from '../../hooks/useAuth';
 import { useTesla } from '../../hooks/useTesla';
 import { useNavigation } from '../../navigation/NavigationContext';
@@ -17,6 +18,9 @@ export const DashboardScreen: React.FC = () => {
   const { connectTesla, disconnectTesla, isConnected, vehicles, selectedVehicle, loading: teslaLoading } = useTesla();
   const { navigate } = useNavigation();
   const isDark = useColorScheme() === 'dark';
+  
+  // Debug logging
+  console.log('DashboardScreen render - isConnected:', isConnected, 'vehicles:', vehicles.length, 'selectedVehicle:', selectedVehicle?.display_name);
 
   const handleSignOut = async () => {
     console.log('handleSignOut called');
@@ -84,22 +88,74 @@ export const DashboardScreen: React.FC = () => {
         <View style={styles.card}>
           <Text style={styles.cardTitle}>🚗 Active Vehicle</Text>
           {selectedVehicle ? (
-            <View>
-              <Text style={styles.vehicleText}>
-                {selectedVehicle.display_name}
-              </Text>
-              <Text style={styles.cardText}>
-                Status: {selectedVehicle.state} • VIN: ...{selectedVehicle.vin.slice(-6)}
-              </Text>
+            <View style={styles.selectedVehicleContainer}>
+              <VehicleImage
+                model={selectedVehicle.model}
+                color={selectedVehicle.color}
+                size="medium"
+                style={styles.selectedVehicleImage}
+              />
+              <View style={styles.selectedVehicleInfo}>
+                <Text style={styles.vehicleText}>
+                  {selectedVehicle.display_name}
+                </Text>
+                <Text style={styles.cardText}>
+                  Status: {selectedVehicle.state} • VIN: ...{selectedVehicle.vin.slice(-6)}
+                </Text>
+                <TouchableOpacity
+                  style={styles.changeVehicleLink}
+                  onPress={() => navigate('vehicles')}
+                >
+                  <Text style={styles.changeVehicleText}>
+                    Change Vehicle →
+                  </Text>
+                </TouchableOpacity>
+              </View>
             </View>
           ) : isConnected ? (
-            <Text style={styles.cardText}>
-              No vehicle selected. Go to Vehicle Management to select your active vehicle.
-            </Text>
+            <View>
+              <Text style={styles.cardText}>
+                No vehicle selected. Go to Vehicle Management to select your active vehicle.
+              </Text>
+              <TouchableOpacity
+                style={[styles.button, styles.vehiclesButton, { marginTop: 16 }]}
+                onPress={() => navigate('vehicles')}
+              >
+                <Text style={styles.buttonText}>
+                  Select Vehicle
+                </Text>
+              </TouchableOpacity>
+              
+              {/* Debug info */}
+              <Text style={[styles.cardText, { fontSize: 12, marginTop: 8, color: '#999' }]}>
+                Debug: Connected={isConnected ? 'true' : 'false'}, Vehicles={vehicles.length}, Selected={selectedVehicle ? 'yes' : 'no'}
+              </Text>
+              {vehicles.length > 0 && (
+                <Text style={[styles.cardText, { fontSize: 10, marginTop: 4, color: '#999' }]}>
+                  Vehicles: {vehicles.map(v => `${v.display_name}(${v.tesla_id || v.id})`).join(', ')}
+                </Text>
+              )}
+              {selectedVehicle && (
+                <Text style={[styles.cardText, { fontSize: 10, marginTop: 4, color: '#999' }]}>
+                  Selected: {selectedVehicle.display_name} (ID: {selectedVehicle.tesla_id || selectedVehicle.id})
+                </Text>
+              )}
+            </View>
           ) : (
-            <Text style={styles.cardText}>
-              Connect your Tesla account to see your vehicles here.
-            </Text>
+            <View>
+              <Text style={styles.cardText}>
+                Connect your Tesla account to see your vehicles here.
+              </Text>
+              <TouchableOpacity
+                style={[styles.button, styles.connectButton, { marginTop: 16 }]}
+                onPress={connectTesla}
+                disabled={teslaLoading}
+              >
+                <Text style={styles.buttonText}>
+                  {teslaLoading ? 'Connecting...' : 'Connect Tesla Account'}
+                </Text>
+              </TouchableOpacity>
+            </View>
           )}
         </View>
 
@@ -129,50 +185,43 @@ export const DashboardScreen: React.FC = () => {
           </Text>
         </View>
 
-        {!isConnected ? (
-          <TouchableOpacity
-            style={[styles.button, styles.connectButton]}
-            onPress={connectTesla}
-            disabled={teslaLoading}
-          >
-            <Text style={styles.buttonText}>
-              {teslaLoading ? 'Connecting...' : 'Connect Tesla Account'}
-            </Text>
-          </TouchableOpacity>
-        ) : (
+        {isConnected && (
           <View style={styles.card}>
-            <Text style={styles.cardTitle}>🚗 Connected Vehicles</Text>
-            {vehicles.map((vehicle) => (
-              <Text key={vehicle.id} style={styles.vehicleText}>
-                {vehicle.display_name} ({vehicle.vin.slice(-6)})
-              </Text>
-            ))}
-            <TouchableOpacity
-              style={[styles.button, styles.reconnectButton]}
-              onPress={connectTesla}
-              disabled={teslaLoading}
-            >
-              <Text style={styles.buttonText}>
-                {teslaLoading ? 'Connecting...' : 'Reconnect Tesla Account'}
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.button, styles.vehiclesButton]}
-              onPress={() => navigate('vehicles')}
-            >
-              <Text style={styles.buttonText}>
-                View Vehicle Details
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.button, styles.disconnectButton]}
-              onPress={handleDisconnectTesla}
-              disabled={teslaLoading}
-            >
-              <Text style={[styles.buttonText, styles.disconnectText]}>
-                {teslaLoading ? 'Disconnecting...' : 'Disconnect Tesla'}
-              </Text>
-            </TouchableOpacity>
+            <Text style={styles.cardTitle}>🔧 Tesla Account</Text>
+            <Text style={styles.cardText}>
+              {vehicles.length} vehicle{vehicles.length !== 1 ? 's' : ''} connected
+            </Text>
+            
+            <View style={{ gap: 12, marginTop: 16 }}>
+              <TouchableOpacity
+                style={[styles.button, styles.vehiclesButton]}
+                onPress={() => navigate('vehicles')}
+              >
+                <Text style={styles.buttonText}>
+                  Manage Vehicles
+                </Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity
+                style={[styles.button, styles.reconnectButton]}
+                onPress={connectTesla}
+                disabled={teslaLoading}
+              >
+                <Text style={styles.buttonText}>
+                  {teslaLoading ? 'Connecting...' : 'Reconnect Tesla Account'}
+                </Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity
+                style={[styles.button, styles.disconnectButton]}
+                onPress={handleDisconnectTesla}
+                disabled={teslaLoading}
+              >
+                <Text style={[styles.buttonText, styles.disconnectText]}>
+                  {teslaLoading ? 'Disconnecting...' : 'Disconnect Tesla'}
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
         )}
 
@@ -293,5 +342,24 @@ const getStyles = (isDark: boolean) => StyleSheet.create({
     fontSize: 14,
     color: isDark ? '#ccc' : '#666',
     marginBottom: 4,
+  },
+  selectedVehicleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  selectedVehicleImage: {
+    marginRight: 16,
+  },
+  selectedVehicleInfo: {
+    flex: 1,
+  },
+  changeVehicleLink: {
+    marginTop: 8,
+    paddingVertical: 4,
+  },
+  changeVehicleText: {
+    fontSize: 14,
+    color: '#007bff',
+    fontWeight: '500',
   },
 });

@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
-import { Text, Button } from '../shared';
+import { Text, Button, VehicleImage } from '../shared';
 import { TeslaVehicle } from '../../services/tesla';
 import { useTheme } from '../../theme';
 
@@ -83,6 +83,9 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
       alignItems: 'flex-start',
       marginBottom: theme.spacing.md,
     },
+    vehicleImage: {
+      marginRight: 12,
+    },
     nameContainer: {
       flex: 1,
     },
@@ -128,6 +131,13 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
       activeOpacity={0.7}
     >
       <View style={styles.header}>
+        <VehicleImage
+          model={getModelName(vehicle.option_codes)}
+          color={vehicle.color}
+          size="small"
+          style={styles.vehicleImage}
+        />
+        
         <View style={styles.nameContainer}>
           <Text variant="h3" numberOfLines={1}>
             {vehicle.display_name || `Tesla ${vehicle.vin.slice(-6)}`}
@@ -173,11 +183,11 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
 
       <View style={styles.actionsContainer}>
         <Button
-          title={isSelected ? "Selected" : "Select"}
+          title={isSelected ? "✓ Selected" : "Select"}
           onPress={onSelect}
           variant={isSelected ? "primary" : "secondary"}
           style={styles.actionButton}
-          disabled={isSelected}
+          disabled={false} // Allow re-selection for UX feedback
         />
         
         <Button

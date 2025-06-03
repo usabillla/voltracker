@@ -40,21 +40,47 @@ export const VehicleListScreen: React.FC = () => {
 
   const handleVehicleSelect = async (vehicle: TeslaVehicle) => {
     try {
+      console.log('Selecting vehicle:', vehicle.display_name, 'ID:', vehicle.id);
       await selectVehicle(vehicle);
+      console.log('Vehicle selected successfully');
+      
+      // Give user feedback that selection worked
+      if (typeof window !== 'undefined') {
+        // For web, show a brief success message
+        console.log(`✅ Selected ${vehicle.display_name}`);
+      }
+      
+      // Navigate to vehicle detail
       navigate('vehicle-detail', { vehicleId: vehicle.id });
     } catch (error) {
       console.error('Failed to select vehicle:', error);
+      
+      // Show error feedback
+      if (typeof window !== 'undefined') {
+        window.alert('Failed to select vehicle. Please try again.');
+      }
     }
   };
 
-  const renderVehicleItem = ({ item }: { item: TeslaVehicle }) => (
-    <VehicleCard
-      vehicle={item}
-      isSelected={selectedVehicle?.id === item.id}
-      onSelect={() => handleVehicleSelect(item)}
-      onViewDetail={() => navigate('vehicle-detail', { vehicleId: item.id })}
-    />
-  );
+  const renderVehicleItem = ({ item }: { item: TeslaVehicle }) => {
+    // Check selection using Tesla ID for consistency
+    const selectedTeslaId = selectedVehicle?.tesla_id || selectedVehicle?.id?.toString();
+    const itemTeslaId = item.tesla_id || item.id?.toString();
+    const isSelected = selectedTeslaId === itemTeslaId;
+    
+    return (
+      <VehicleCard
+        vehicle={item}
+        isSelected={isSelected}
+        onSelect={() => handleVehicleSelect(item)}
+        onViewDetail={() => {
+          const vehicleId = item.tesla_id || item.id;
+          console.log('Navigating to vehicle detail with ID:', vehicleId);
+          navigate('vehicle-detail', { vehicleId: vehicleId });
+        }}
+      />
+    );
+  };
 
   if (loading && vehicles.length === 0) {
     return (

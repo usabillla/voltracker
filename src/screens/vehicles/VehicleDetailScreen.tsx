@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, ScrollView, RefreshControl } from 'react-native';
-import { Screen, Text, Button, LoadingSpinner } from '../../components/shared';
+import { Screen, Text, Button, LoadingSpinner, VehicleImage } from '../../components/shared';
 import { VehicleStatusCard } from '../../components/vehicles/VehicleStatusCard';
 import { VehicleInfoCard } from '../../components/vehicles/VehicleInfoCard';
 import { useTesla } from '../../hooks/useTesla';
@@ -9,22 +9,42 @@ import { useNavigation } from '../../navigation/NavigationContext';
 export const VehicleDetailScreen: React.FC = () => {
   const { currentParams, navigate, goBack } = useNavigation();
   const vehicleId = currentParams?.vehicleId;
-  const { vehicles, selectVehicle, getVehicleData } = useTesla();
+  const { vehicles, selectVehicle, getVehicleData, loading: teslaLoading } = useTesla();
   
   const [vehicleData, setVehicleData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const vehicle = vehicles.find(v => v.id === vehicleId);
+  // Find vehicle by Tesla ID or database UUID
+  const vehicle = vehicles.find(v => 
+    v.id === vehicleId || 
+    v.tesla_id === vehicleId || 
+    v.id?.toString() === vehicleId ||
+    v.tesla_id?.toString() === vehicleId
+  );
+  
+  console.log('VehicleDetailScreen - Looking for vehicle ID:', vehicleId);
+  console.log('VehicleDetailScreen - Available vehicles:', vehicles.map(v => ({ id: v.id, tesla_id: v.tesla_id, name: v.display_name })));
+  console.log('VehicleDetailScreen - Found vehicle:', vehicle?.display_name || 'none');
 
   useEffect(() => {
-    if (!vehicle) {
+    // Wait for vehicles to load before deciding if vehicle exists
+    if (teslaLoading) {
+      console.log('VehicleDetailScreen - Tesla data still loading, waiting...');
+      return;
+    }
+    
+    if (!vehicle && vehicles.length > 0) {
+      console.log('VehicleDetailScreen - Vehicle not found after loading, going back');
       goBack();
       return;
     }
     
-    loadVehicleData();
-  }, [vehicle]);
+    if (vehicle) {
+      console.log('VehicleDetailScreen - Vehicle found, loading data for:', vehicle.display_name);
+      loadVehicleData();
+    }
+  }, [vehicle, teslaLoading, vehicles.length]);
 
   const loadVehicleData = async () => {
     if (!vehicle) return;
@@ -33,7 +53,9 @@ export const VehicleDetailScreen: React.FC = () => {
     setError(null);
     
     try {
-      const data = await getVehicleData(vehicle.id);
+      // Use Tesla ID for API calls
+      const teslaId = vehicle.tesla_id || vehicle.id;
+      const data = await getVehicleData(teslaId);
       setVehicleData(data);
     } catch (error) {
       console.error('Failed to load vehicle data:', error);
@@ -54,7 +76,20 @@ export const VehicleDetailScreen: React.FC = () => {
     }
   };
 
-  if (!vehicle) {
+  // Show loading while Tesla data is being fetched
+  if (teslaLoading || (!vehicle && vehicles.length === 0)) {
+    return (
+      <Screen centered>
+        <LoadingSpinner size="large" />
+        <Text variant="h2" style={{ marginTop: 24 }}>
+          Loading Vehicle...
+        </Text>
+      </Screen>
+    );
+  }
+
+  // Vehicle not found after data loaded
+  if (!vehicle && vehicles.length > 0) {
     return (
       <Screen centered>
         <Text variant="h2">Vehicle not found</Text>
@@ -63,6 +98,7 @@ export const VehicleDetailScreen: React.FC = () => {
     );
   }
 
+  // Vehicle data loading
   if (loading && !vehicleData) {
     return (
       <Screen centered>
@@ -85,6 +121,26 @@ export const VehicleDetailScreen: React.FC = () => {
         borderBottomColor: '#f0f0f0',
         backgroundColor: '#ffffff'
       }}>
+        <View style={{ 
+          flexDirection: 'row', 
+          alignItems: 'center', 
+          marginBottom: 16 
+        }}>
+          <Button
+            title="← Back"
+            variant="ghost"
+            onPress={() => goBack()}
+            style={{ 
+              paddingVertical: 8,
+              paddingHorizontal: 12,
+              borderRadius: 8,
+              marginRight: 16
+            }}
+          />
+          <Text variant="body" color="secondary">
+            Vehicle Details
+          </Text>
+        </View>
         <Text variant="h1" style={{ marginBottom: 4 }}>
           {vehicle.display_name || `Tesla ${vehicle.vin.slice(-6)}`}
         </Text>
@@ -121,6 +177,13 @@ export const VehicleDetailScreen: React.FC = () => {
         )}
 
         <View style={{ padding: 20, gap: 16 }}>
+          <VehicleImage
+            model={vehicle.model}
+            color={vehicle.color}
+            size="large"
+            style={{ alignSelf: 'center', marginBottom: 20 }}
+          />
+          
           <VehicleStatusCard vehicle={vehicle} vehicleData={vehicleData} />
           <VehicleInfoCard vehicle={vehicle} vehicleData={vehicleData} />
 

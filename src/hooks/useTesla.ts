@@ -42,18 +42,39 @@ export const useTesla = () => {
           state: vehicle.state || 'offline',
           api_version: vehicle.api_version || 1,
           option_codes: vehicle.option_codes || '',
+          model: vehicle.model || parseModelFromVin(vehicle.vin || ''),
+          color: vehicle.color || 'Unknown',
         }));
         
-        // Load selected vehicle
-        const selectedVehicleId = await SecureStorage.getSelectedVehicle();
-        const selectedVehicle = selectedVehicleId 
-          ? vehicleList.find(v => v.id === selectedVehicleId) || null
-          : null;
+        console.log('Loading vehicles - Vehicle count:', vehicleList.length);
+        console.log('Available vehicles:', vehicleList.map(v => ({ 
+          id: v.id, 
+          tesla_id: v.tesla_id, 
+          name: v.display_name,
+          model: v.model,
+          color: v.color 
+        })));
+        
+        // Simplified selection: always select first vehicle if we have any
+        let finalSelectedVehicle = null;
+        if (vehicleList.length > 0) {
+          finalSelectedVehicle = vehicleList[0];
+          console.log('SIMPLIFIED SELECTION: Selected first vehicle:', finalSelectedVehicle.display_name);
+          
+          // Store the selection
+          const teslaId = finalSelectedVehicle.tesla_id || finalSelectedVehicle.id?.toString();
+          if (teslaId) {
+            await SecureStorage.storeSelectedVehicle(teslaId);
+            console.log('Stored Tesla ID:', teslaId);
+          }
+        }
 
+        console.log('Setting Tesla state - vehicles:', vehicleList.length, 'selectedVehicle:', finalSelectedVehicle?.display_name);
+        
         setTeslaState(prev => ({
           ...prev,
           vehicles: vehicleList,
-          selectedVehicle,
+          selectedVehicle: finalSelectedVehicle,
           isConnected: vehicleList.length > 0,
         }));
       } catch (error) {
@@ -160,9 +181,24 @@ export const useTesla = () => {
       }
 
       console.log('Tesla connection completed successfully');
+      
+      // Auto-select the first vehicle if none is selected
+      const currentSelectedTeslaId = await SecureStorage.getSelectedVehicle();
+      let selectedVehicle = null;
+      
+      if (!currentSelectedTeslaId && vehicles.length > 0) {
+        console.log('Auto-selecting first vehicle:', vehicles[0].display_name);
+        selectedVehicle = vehicles[0];
+        // Use Tesla ID for selection, not database UUID
+        await SecureStorage.storeSelectedVehicle(vehicles[0].id.toString());
+      } else if (currentSelectedTeslaId) {
+        selectedVehicle = vehicles.find(v => v.id.toString() === currentSelectedTeslaId) || null;
+      }
+
       setTeslaState(prev => ({
         ...prev,
         vehicles,
+        selectedVehicle,
         loading: false,
         isConnected: true,
         error: null,
@@ -262,7 +298,9 @@ export const useTesla = () => {
 
   const selectVehicle = async (vehicle: TeslaVehicle) => {
     try {
-      await SecureStorage.storeSelectedVehicle(vehicle.id);
+      // Use Tesla ID for consistent selection (vehicles from API use Tesla ID, database vehicles use tesla_id field)
+      const teslaId = vehicle.tesla_id || vehicle.id.toString();
+      await SecureStorage.storeSelectedVehicle(teslaId);
       setTeslaState(prev => ({
         ...prev,
         selectedVehicle: vehicle,
@@ -299,16 +337,24 @@ export const useTesla = () => {
       try {
         const tokens = await SecureStorage.getTeslaTokens();
         if (tokens?.access_token) {
-          // Attempt to revoke the Tesla access token
-          await fetch('https://auth.tesla.com/oauth2/v3/revoke', {
+          console.log('Revoking Tesla access token via proxy...');
+          // Use our proxy endpoint to avoid CORS issues
+          const response = await fetch('/api/tesla/revoke', {
             method: 'POST',
             headers: {
-              'Content-Type': 'application/x-www-form-urlencoded',
+              'Content-Type': 'application/json',
             },
-            body: new URLSearchParams({
+            body: JSON.stringify({
               token: tokens.access_token,
-            }).toString(),
+            }),
           });
+          
+          if (response.ok) {
+            const result = await response.json();
+            console.log('Tesla token revocation result:', result);
+          } else {
+            console.warn('Tesla token revocation failed:', response.status);
+          }
         }
       } catch (revokeError) {
         console.warn('Failed to revoke Tesla token:', revokeError);
