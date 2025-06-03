@@ -131,8 +131,26 @@ export class AuthService {
 
   // Sign out user
   static async signOut(): Promise<{ error: AuthError | null }> {
-    const { error } = await supabase.auth.signOut();
-    return { error };
+    try {
+      // Clear any cached Tesla tokens before signing out
+      const { SecureStorage } = await import('./secureStorage');
+      await SecureStorage.clearAllData();
+      
+      logSecurityEvent('signout_initiated', {});
+      
+      const { error } = await supabase.auth.signOut();
+      
+      if (error) {
+        logSecurityEvent('signout_failed', { error: error.message });
+      } else {
+        logSecurityEvent('signout_success', {});
+      }
+      
+      return { error };
+    } catch (error) {
+      logSecurityEvent('signout_error', { error: error instanceof Error ? error.message : 'Unknown error' });
+      return { error: { message: 'An unexpected error occurred during sign out' } as AuthError };
+    }
   }
 
   // Reset password with security checks

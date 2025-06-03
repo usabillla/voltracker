@@ -28,7 +28,16 @@ export const DashboardScreen: React.FC = () => {
           text: 'Sign Out',
           style: 'destructive',
           onPress: async () => {
-            await signOut();
+            try {
+              console.log('Sign out initiated from dashboard');
+              await signOut();
+              console.log('Sign out completed');
+              // Navigate to login after successful sign out
+              navigate('login');
+            } catch (error) {
+              console.error('Sign out error:', error);
+              Alert.alert('Error', 'Failed to sign out. Please try again.');
+            }
           },
         },
       ],
@@ -106,7 +115,7 @@ export const DashboardScreen: React.FC = () => {
         ) : (
           <View style={styles.card}>
             <Text style={styles.cardTitle}>🚗 Connected Vehicles</Text>
-            {vehicles.map((vehicle, index) => (
+            {vehicles.map((vehicle) => (
               <Text key={vehicle.id} style={styles.vehicleText}>
                 {vehicle.display_name} ({vehicle.vin.slice(-6)})
               </Text>
