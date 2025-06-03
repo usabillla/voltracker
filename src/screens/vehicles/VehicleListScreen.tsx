@@ -17,6 +17,7 @@ export const VehicleListScreen: React.FC = () => {
     selectVehicle,
     refreshVehicles,
     connectTesla,
+    disconnectTesla,
     clearError,
   } = useTesla();
 

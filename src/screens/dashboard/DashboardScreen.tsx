@@ -14,34 +14,61 @@ import { useNavigation } from '../../navigation/NavigationContext';
 
 export const DashboardScreen: React.FC = () => {
   const { user, signOut, loading } = useAuth();
-  const { connectTesla, isConnected, vehicles, selectedVehicle, loading: teslaLoading } = useTesla();
+  const { connectTesla, disconnectTesla, isConnected, vehicles, selectedVehicle, loading: teslaLoading } = useTesla();
   const { navigate } = useNavigation();
   const isDark = useColorScheme() === 'dark';
 
   const handleSignOut = async () => {
-    Alert.alert(
-      'Sign Out',
-      'Are you sure you want to sign out?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Sign Out',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              console.log('Sign out initiated from dashboard');
-              await signOut();
-              console.log('Sign out completed');
-              // Navigate to login after successful sign out
-              navigate('login');
-            } catch (error) {
-              console.error('Sign out error:', error);
-              Alert.alert('Error', 'Failed to sign out. Please try again.');
-            }
-          },
-        },
-      ],
-    );
+    console.log('handleSignOut called');
+    
+    // Use window.confirm for web, which is more reliable than React Native Alert
+    const confirmed = typeof window !== 'undefined' 
+      ? window.confirm('Are you sure you want to sign out?')
+      : true; // For mobile, just proceed (or we could use Alert there)
+    
+    if (!confirmed) {
+      console.log('Sign out cancelled');
+      return;
+    }
+    
+    try {
+      console.log('Sign out confirmed, calling signOut()');
+      await signOut();
+      console.log('signOut() completed, navigating to login');
+      // Navigate to login after successful sign out
+      navigate('login');
+      console.log('Navigation to login completed');
+    } catch (error) {
+      console.error('Sign out error:', error);
+      // Use window.alert for web error display
+      if (typeof window !== 'undefined') {
+        window.alert('Failed to sign out. Please try again.');
+      }
+    }
+  };
+
+  const handleDisconnectTesla = async () => {
+    console.log('handleDisconnectTesla called');
+    
+    const confirmed = typeof window !== 'undefined' 
+      ? window.confirm('Are you sure you want to disconnect your Tesla account? This will remove all vehicle data.')
+      : true;
+    
+    if (!confirmed) {
+      console.log('Tesla disconnect cancelled');
+      return;
+    }
+    
+    try {
+      console.log('Disconnecting Tesla...');
+      await disconnectTesla();
+      console.log('Tesla disconnected successfully');
+    } catch (error) {
+      console.error('Tesla disconnect error:', error);
+      if (typeof window !== 'undefined') {
+        window.alert('Failed to disconnect Tesla. Please try again.');
+      }
+    }
   };
 
   const styles = getStyles(isDark);
@@ -137,12 +164,24 @@ export const DashboardScreen: React.FC = () => {
                 View Vehicle Details
               </Text>
             </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.button, styles.disconnectButton]}
+              onPress={handleDisconnectTesla}
+              disabled={teslaLoading}
+            >
+              <Text style={[styles.buttonText, styles.disconnectText]}>
+                {teslaLoading ? 'Disconnecting...' : 'Disconnect Tesla'}
+              </Text>
+            </TouchableOpacity>
           </View>
         )}
 
         <TouchableOpacity
-          style={[styles.button, styles.signOutButton]}
-          onPress={handleSignOut}
+          style={[styles.button, styles.signOutButton, loading && { opacity: 0.5 }]}
+          onPress={() => {
+            console.log('Sign out button pressed, loading:', loading);
+            handleSignOut();
+          }}
           disabled={loading}
         >
           <Text style={[styles.buttonText, styles.signOutText]}>
@@ -229,6 +268,12 @@ const getStyles = (isDark: boolean) => StyleSheet.create({
     backgroundColor: '#6f42c1',
     marginTop: 8,
   },
+  disconnectButton: {
+    backgroundColor: 'transparent',
+    borderWidth: 1,
+    borderColor: '#fd7e14',
+    marginTop: 8,
+  },
   signOutButton: {
     backgroundColor: 'transparent',
     borderWidth: 1,
@@ -237,6 +282,9 @@ const getStyles = (isDark: boolean) => StyleSheet.create({
   buttonText: {
     fontSize: 16,
     fontWeight: '600',
+  },
+  disconnectText: {
+    color: '#fd7e14',
   },
   signOutText: {
     color: '#dc3545',

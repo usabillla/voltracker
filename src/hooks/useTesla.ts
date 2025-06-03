@@ -295,6 +295,29 @@ export const useTesla = () => {
     try {
       setTeslaState(prev => ({ ...prev, loading: true, error: null }));
 
+      // Try to revoke Tesla tokens before deletion
+      try {
+        const tokens = await SecureStorage.getTeslaTokens();
+        if (tokens?.access_token) {
+          // Attempt to revoke the Tesla access token
+          await fetch('https://auth.tesla.com/oauth2/v3/revoke', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams({
+              token: tokens.access_token,
+            }).toString(),
+          });
+        }
+      } catch (revokeError) {
+        console.warn('Failed to revoke Tesla token:', revokeError);
+        // Continue with disconnection even if revoke fails
+      }
+
+      // Clear all Tesla data from secure storage
+      await SecureStorage.clearAllData();
+
       // Clear all vehicle data from database
       const { error } = await supabase
         .from('vehicles')
@@ -304,12 +327,6 @@ export const useTesla = () => {
       if (error) {
         throw error;
       }
-
-      // Clear selected vehicle from storage
-      await SecureStorage.clearSelectedVehicle();
-
-      // Clear OAuth state
-      await SecureStorage.clearOAuthState();
 
       setTeslaState({
         vehicles: [],
