@@ -1,12 +1,4 @@
 {
-  "functions": {
-    "api/beta-signup.js": {
-      "runtime": "@vercel/node"
-    },
-    "api/analytics.js": {
-      "runtime": "@vercel/node"
-    }
-  },
   "headers": [
     {
       "source": "/(.*)",
