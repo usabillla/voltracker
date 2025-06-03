@@ -933,7 +933,7 @@
                         <li><a href="#how-it-works">How it Works</a></li>
                         <li><a href="#pricing">Pricing</a></li>
                         <li><a href="/dashboard.html" class="btn btn-secondary">Sign In</a></li>
-                        <li><a href="#beta" class="btn btn-primary">Get Started</a></li>
+                        <li><a href="/app" class="btn btn-primary">Get Started</a></li>
                     </ul>
                 </nav>
             </div>
@@ -1366,7 +1366,7 @@
         <div class="container">
             <h2>Ready to Save on Taxes?</h2>
             <p>Join 500+ EV owners already tracking millions in deductions</p>
-            <a href="#beta" class="btn btn-primary btn-lg">Get Beta Access</a>
+            <a href="/app" class="btn btn-primary btn-lg">Launch App</a>
         </div>
     </section>
 
@@ -1467,6 +1467,11 @@
                         </svg>
                         <span>${result.message}</span>
                         ${result.data?.position ? `<small>You're #${result.data.position} on the beta list!</small>` : ''}
+                        <div style="margin-top: 16px;">
+                            <a href="https://app.voltracker.com" class="btn btn-primary btn-lg" style="display: inline-block; margin-top: 8px;">
+                                🚀 Launch VoltTracker App
+                            </a>
+                        </div>
                     `;
                     successAlert.classList.add('show');
                     form.reset();
