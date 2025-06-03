@@ -1,0 +1,32 @@
+{
+  "name": "voltracker-web",
+  "version": "1.0.0",
+  "description": "VoltTracker Landing Page - Automated Mileage Tracking for Electric Vehicle Owners",
+  "main": "index.html",
+  "scripts": {
+    "dev": "vercel dev",
+    "build": "echo 'Static site - no build needed'",
+    "deploy": "vercel --prod",
+    "test": "echo 'No tests yet'"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0"
+  },
+  "devDependencies": {
+    "vercel": "^33.0.0"
+  },
+  "keywords": [
+    "mileage tracking",
+    "electric vehicle",
+    "tax deductions",
+    "tesla",
+    "ev",
+    "automation"
+  ],
+  "author": "VoltTracker Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/voltracker/voltracker-web"
+  }
+}

@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAQ - VoltTracker | Automated Mileage Tracking for Electric Vehicles</title>
+    <meta name="description" content="Frequently asked questions about VoltTracker's automated mileage tracking for electric vehicles. Learn about Tesla integration, tax deductions, and more.">
+    
+    <!-- Include the same CSS from main page -->
+    <link rel="stylesheet" href="styles.css">
+    
+    <style>
+        .faq-container {
+            max-width: 800px;
+            margin: 120px auto 80px;
+            padding: 0 24px;
+        }
+        
+        .faq-header {
+            text-align: center;
+            margin-bottom: 64px;
+        }
+        
+        .faq-header h1 {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+        
+        .faq-item {
+            margin-bottom: 24px;
+            border: 1px solid var(--gray-lighter);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+        }
+        
+        .faq-question {
+            width: 100%;
+            padding: 24px;
+            background: var(--white);
+            border: none;
+            text-align: left;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.2s;
+        }
+        
+        .faq-question:hover {
+            background: var(--gray-lightest);
+        }
+        
+        .faq-question.active {
+            background: var(--primary-light);
+            color: var(--primary-dark);
+        }
+        
+        .faq-icon {
+            transition: transform 0.3s;
+        }
+        
+        .faq-question.active .faq-icon {
+            transform: rotate(180deg);
+        }
+        
+        .faq-answer {
+            padding: 0 24px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+        }
+        
+        .faq-answer.active {
+            padding: 0 24px 24px;
+            max-height: 500px;
+        }
+        
+        .faq-answer p {
+            color: var(--gray-dark);
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+        
+        .faq-answer ul {
+            margin-left: 20px;
+            margin-bottom: 16px;
+        }
+        
+        .faq-answer li {
+            color: var(--gray-dark);
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <a href="/" class="logo">
+                    <div class="logo-icon">
+                        <svg class="logo-svg" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="20" cy="20" r="20" fill="#FF385C"/>
+                            <path d="M24 12L16 20H21L17 28L25 20H20L24 12Z" fill="white" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    VoltTracker
+                </a>
+                <nav>
+                    <ul class="nav-menu">
+                        <li><a href="/#features">Features</a></li>
+                        <li><a href="/#how-it-works">How it Works</a></li>
+                        <li><a href="/#pricing">Pricing</a></li>
+                        <li><a href="/faq.html">FAQ</a></li>
+                        <li><a href="#" class="btn btn-secondary">Sign In</a></li>
+                        <li><a href="/#beta" class="btn btn-primary">Get Started</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="faq-container">
+        <div class="faq-header">
+            <h1>Frequently Asked Questions</h1>
+            <p>Everything you need to know about VoltTracker</p>
+        </div>
+
+        <div class="faq-item">
+            <button class="faq-question">
+                How does VoltTracker automatically track my trips?
+                <svg class="faq-icon" width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                    <path fill-rule="evenodd" d="M8 10L4 6h8l-4 4z"/>
+                </svg>
+            </button>
+            <div class="faq-answer">
+                <p>VoltTracker connects securely to your electric vehicle's API (starting with Tesla) to automatically detect when you start and stop driving. Our system:</p>
+                <ul>
+                    <li>Monitors your vehicle's location and status in real-time</li>
+                    <li>Automatically logs trip start/end times and locations</li>
+                    <li>Uses GPS data to calculate exact mileage</li>
+                    <li>Categorizes trips based on destinations and patterns</li>
+                </ul>
+                <p>No phone app required - it works completely in the background through your vehicle's built-in connectivity.</p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <button class="faq-question">
+                Which electric vehicles are supported?
+                <svg class="faq-icon" width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                    <path fill-rule="evenodd" d="M8 10L4 6h8l-4 4z"/>
+                </svg>
+            </button>
+            <div class="faq-answer">
+                <p>Currently supported vehicles:</p>
+                <ul>
+                    <li><strong>Tesla:</strong> All models (Model S, 3, X, Y, Cybertruck)</li>
+                    <li><strong>Coming Soon:</strong> Ford Mustang Mach-E, F-150 Lightning</li>
+                    <li><strong>Coming Soon:</strong> Rivian R1T, R1S</li>
+                    <li><strong>Coming Soon:</strong> BMW iX, i4</li>
+                </ul>
+                <p>We're rapidly expanding support for more EVs. If your vehicle isn't listed, join our beta and let us know - we prioritize based on user demand.</p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <button class="faq-question">
+                Is my data secure and private?
+                <svg class="faq-icon" width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                    <path fill-rule="evenodd" d="M8 10L4 6h8l-4 4z"/>
+                </svg>
+            </button>
+            <div class="faq-answer">
+                <p>Yes, security and privacy are our top priorities:</p>
+                <ul>
+                    <li><strong>Encrypted Data:</strong> All data is encrypted in transit and at rest</li>
+                    <li><strong>OAuth Authentication:</strong> We use official vehicle APIs with secure OAuth tokens</li>
+                    <li><strong>Minimal Data Collection:</strong> We only collect location data necessary for mileage tracking</li>
+                    <li><strong>No Data Selling:</strong> We never sell or share your personal data</li>
+                    <li><strong>GDPR Compliant:</strong> Full compliance with privacy regulations</li>
+                </ul>
+                <p>You can delete your data at any time, and we provide full transparency into what data we collect.</p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <button class="faq-question">
+                How much can I save on taxes?
+                <svg class="faq-icon" width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                    <path fill-rule="evenodd" d="M8 10L4 6h8l-4 4z"/>
+                </svg>
+            </button>
+            <div class="faq-answer">
+                <p>Tax savings depend on your business mileage and tax bracket:</p>
+                <ul>
+                    <li><strong>2024 IRS Rate:</strong> $0.67 per business mile</li>
+                    <li><strong>Example:</strong> 10,000 business miles = $6,700 deduction</li>
+                    <li><strong>Tax Savings:</strong> $1,675 - $2,680 (depending on tax bracket)</li>
+                </ul>
+                <p>Our users average $3,847 in annual tax savings. The key is having detailed, IRS-compliant documentation - which VoltTracker provides automatically.</p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <button class="faq-question">
+                Are the reports IRS compliant?
+                <svg class="faq-icon" width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                    <path fill-rule="evenodd" d="M8 10L4 6h8l-4 4z"/>
+                </svg>
+            </button>
+            <div class="faq-answer">
+                <p>Yes, VoltTracker reports meet all IRS requirements for mileage deductions:</p>
+                <ul>
+                    <li><strong>Date and Time:</strong> Exact timestamps for each trip</li>
+                    <li><strong>Mileage:</strong> Precise GPS-calculated distances</li>
+                    <li><strong>Locations:</strong> Start and end addresses</li>
+                    <li><strong>Business Purpose:</strong> Automated categorization with manual override</li>
+                    <li><strong>Vehicle Information:</strong> VIN, make, model for each trip</li>
+                </ul>
+                <p>Reports are generated in standard formats accepted by tax professionals and audit-ready.</p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <button class="faq-question">
+                How accurate is the automatic categorization?
+                <svg class="faq-icon" width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                    <path fill-rule="evenodd" d="M8 10L4 6h8l-4 4z"/>
+                </svg>
+            </button>
+            <div class="faq-answer">
+                <p>Our AI categorization achieves 85-95% accuracy and improves over time:</p>
+                <ul>
+                    <li><strong>Learning Algorithm:</strong> Recognizes patterns in your driving habits</li>
+                    <li><strong>Location Intelligence:</strong> Identifies business vs. personal destinations</li>
+                    <li><strong>Manual Override:</strong> Easy one-click corrections for any trip</li>
+                    <li><strong>Custom Rules:</strong> Set specific locations as always business/personal</li>
+                </ul>
+                <p>Most users only need to manually categorize 5-10% of trips after the first month.</p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <button class="faq-question">
+                Can I try VoltTracker for free?
+                <svg class="faq-icon" width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                    <path fill-rule="evenodd" d="M8 10L4 6h8l-4 4z"/>
+                </svg>
+            </button>
+            <div class="faq-answer">
+                <p>Yes! We offer multiple ways to try VoltTracker risk-free:</p>
+                <ul>
+                    <li><strong>Beta Access:</strong> Free during beta period (limited spots)</li>
+                    <li><strong>30-Day Trial:</strong> Full access to all features</li>
+                    <li><strong>Money-Back Guarantee:</strong> 60-day refund if not satisfied</li>
+                </ul>
+                <p>Join our beta waitlist to get free access when we launch in your area.</p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <button class="faq-question">
+                Does VoltTracker drain my car's battery?
+                <svg class="faq-icon" width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                    <path fill-rule="evenodd" d="M8 10L4 6h8l-4 4z"/>
+                </svg>
+            </button>
+            <div class="faq-answer">
+                <p>No, VoltTracker has minimal impact on your vehicle's battery:</p>
+                <ul>
+                    <li><strong>Cloud-Based:</strong> Processing happens on our servers, not in your car</li>
+                    <li><strong>Efficient Polling:</strong> We only check your vehicle status when needed</li>
+                    <li><strong>Sleep Mode Respect:</strong> Won't wake your car unnecessarily</li>
+                    <li><strong>Typical Impact:</strong> Less than 1 mile of range per month</li>
+                </ul>
+                <p>We're designed to work with your vehicle's existing connectivity without adding strain.</p>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h4>
+                        <svg width="32" height="32" viewBox="0 0 40 40" fill="none">
+                            <circle cx="20" cy="20" r="20" fill="#FF385C"/>
+                            <path d="M24 12L16 20H21L17 28L25 20H20L24 12Z" fill="white"/>
+                        </svg>
+                        VoltTracker
+                    </h4>
+                    <p>Automated mileage tracking for electric vehicle owners.</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h5>Product</h5>
+                    <ul class="footer-links">
+                        <li><a href="/#features">Features</a></li>
+                        <li><a href="/#how-it-works">How it Works</a></li>
+                        <li><a href="/#pricing">Pricing</a></li>
+                        <li><a href="/faq.html">FAQ</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h5>Company</h5>
+                    <ul class="footer-links">
+                        <li><a href="/about.html">About Us</a></li>
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#">Careers</a></li>
+                        <li><a href="#">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h5>Legal</h5>
+                    <ul class="footer-links">
+                        <li><a href="/privacy.html">Privacy Policy</a></li>
+                        <li><a href="/terms.html">Terms of Service</a></li>
+                        <li><a href="#">Security</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2024 VoltTracker. Not affiliated with Tesla, Inc. or other EV manufacturers.</p>
+                <p>Made with ⚡ for EV drivers</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // FAQ accordion functionality
+        document.querySelectorAll('.faq-question').forEach(question => {
+            question.addEventListener('click', () => {
+                const answer = question.nextElementSibling;
+                const isActive = question.classList.contains('active');
+                
+                // Close all other FAQ items
+                document.querySelectorAll('.faq-question').forEach(q => {
+                    q.classList.remove('active');
+                    q.nextElementSibling.classList.remove('active');
+                });
+                
+                // Toggle current item
+                if (!isActive) {
+                    question.classList.add('active');
+                    answer.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

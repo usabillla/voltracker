@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics Dashboard - VoltTracker</title>
+    <meta name="robots" content="noindex, nofollow">
+    
+    <link rel="stylesheet" href="styles.css">
+    
+    <style>
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 120px auto 80px;
+            padding: 0 24px;
+        }
+        
+        .dashboard-header {
+            margin-bottom: 48px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .login-form {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            max-width: 400px;
+            margin: 0 auto;
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .stats-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+            margin-bottom: 48px;
+        }
+        
+        .stat-card {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            box-shadow: var(--shadow-md);
+            border-left: 4px solid var(--primary);
+        }
+        
+        .stat-value {
+            font-size: 36px;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: var(--gray);
+            font-weight: 500;
+        }
+        
+        .chart-container {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            box-shadow: var(--shadow-md);
+            margin-bottom: 32px;
+        }
+        
+        .chart-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 24px;
+        }
+        
+        .table-container {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+        }
+        
+        .table-header {
+            background: var(--gray-lightest);
+            padding: 20px 32px;
+            border-bottom: 1px solid var(--gray-lighter);
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .data-table th,
+        .data-table td {
+            padding: 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--gray-lighter);
+        }
+        
+        .data-table th {
+            background: var(--gray-lightest);
+            font-weight: 600;
+            color: var(--black);
+        }
+        
+        .data-table tr:hover {
+            background: var(--gray-lightest);
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 48px;
+            color: var(--gray);
+        }
+        
+        .error {
+            background: #FEF2F2;
+            color: #DC2626;
+            padding: 16px;
+            border-radius: var(--radius-md);
+            margin-bottom: 24px;
+        }
+        
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <a href="/" class="logo">
+                    <div class="logo-icon">
+                        <svg class="logo-svg" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="20" cy="20" r="20" fill="#FF385C"/>
+                            <path d="M24 12L16 20H21L17 28L25 20H20L24 12Z" fill="white" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    VoltTracker
+                </a>
+                <nav>
+                    <ul class="nav-menu">
+                        <li><a href="/">Home</a></li>
+                        <li><a href="#" id="logoutBtn" class="btn btn-secondary">Logout</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="dashboard-container">
+        <!-- Login Form -->
+        <div id="loginSection">
+            <div class="login-form">
+                <h2>Analytics Access</h2>
+                <p class="text-gray">Enter your API key to view beta signup analytics</p>
+                
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label class="form-label" for="apiKey">API Key</label>
+                        <input type="password" class="form-control" id="apiKey" placeholder="Enter your analytics API key" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">Access Dashboard</button>
+                </form>
+                
+                <div id="loginError" class="error hidden">
+                    Invalid API key. Please try again.
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Content -->
+        <div id="dashboardSection" class="hidden">
+            <div class="dashboard-header">
+                <h1>Beta Signup Analytics</h1>
+                <div class="text-gray">Last updated: <span id="lastUpdate">-</span></div>
+            </div>
+
+            <div id="loadingState" class="loading">
+                Loading analytics data...
+            </div>
+
+            <div id="dashboardContent" class="hidden">
+                <!-- Stats Overview -->
+                <div class="stats-overview">
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalSignups">-</div>
+                        <div class="stat-label">Total Beta Signups</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="todaySignups">-</div>
+                        <div class="stat-label">Signups Today</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="avgDaily">-</div>
+                        <div class="stat-label">Avg Daily Signups</div>
+                    </div>
+                </div>
+
+                <!-- EV Models Chart -->
+                <div class="chart-container">
+                    <h3 class="chart-title">Signups by Electric Vehicle Model</h3>
+                    <div id="evModelsChart">
+                        <canvas id="evChart" width="400" height="200"></canvas>
+                    </div>
+                </div>
+
+                <!-- Use Cases Chart -->
+                <div class="chart-container">
+                    <h3 class="chart-title">Signups by Use Case</h3>
+                    <div id="useCasesChart">
+                        <canvas id="useCaseChart" width="400" height="200"></canvas>
+                    </div>
+                </div>
+
+                <!-- Recent Signups Table -->
+                <div class="table-container">
+                    <div class="table-header">
+                        <h3>Recent Beta Signups</h3>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>EV Model</th>
+                                <th>Use Case</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recentSignupsTable">
+                            <!-- Data populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let currentApiKey = '';
+
+        // Login handling
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const apiKey = document.getElementById('apiKey').value;
+            const errorDiv = document.getElementById('loginError');
+            
+            try {
+                // Test API key with analytics endpoint
+                const response = await fetch('/api/analytics', {
+                    headers: {
+                        'Authorization': `Bearer ${apiKey}`
+                    }
+                });
+                
+                if (response.ok) {
+                    currentApiKey = apiKey;
+                    showDashboard();
+                    loadAnalytics();
+                    errorDiv.classList.add('hidden');
+                } else {
+                    errorDiv.classList.remove('hidden');
+                }
+            } catch (error) {
+                errorDiv.classList.remove('hidden');
+            }
+        });
+
+        // Logout handling
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            currentApiKey = '';
+            showLogin();
+        });
+
+        function showLogin() {
+            document.getElementById('loginSection').classList.remove('hidden');
+            document.getElementById('dashboardSection').classList.add('hidden');
+        }
+
+        function showDashboard() {
+            document.getElementById('loginSection').classList.add('hidden');
+            document.getElementById('dashboardSection').classList.remove('hidden');
+            document.getElementById('loadingState').classList.remove('hidden');
+            document.getElementById('dashboardContent').classList.add('hidden');
+        }
+
+        async function loadAnalytics() {
+            try {
+                const response = await fetch('/api/analytics', {
+                    headers: {
+                        'Authorization': `Bearer ${currentApiKey}`
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to load analytics');
+                }
+                
+                const data = await response.json();
+                displayAnalytics(data);
+                
+                document.getElementById('loadingState').classList.add('hidden');
+                document.getElementById('dashboardContent').classList.remove('hidden');
+                
+            } catch (error) {
+                console.error('Analytics error:', error);
+                document.getElementById('loadingState').innerHTML = 
+                    '<div class="error">Failed to load analytics data</div>';
+            }
+        }
+
+        function displayAnalytics(data) {
+            // Update stats
+            document.getElementById('totalSignups').textContent = data.summary.totalSignups.toLocaleString();
+            document.getElementById('todaySignups').textContent = data.summary.todaySignups.toLocaleString();
+            document.getElementById('avgDaily').textContent = data.summary.averageDailySignups.toFixed(1);
+            document.getElementById('lastUpdate').textContent = new Date().toLocaleString();
+
+            // Display EV models data
+            displayEvModels(data.evModels);
+            
+            // Display use cases data
+            displayUseCases(data.useCases);
+            
+            // Display recent signups
+            displayRecentSignups(data.recentSignups);
+        }
+
+        function displayEvModels(evModels) {
+            const container = document.getElementById('evModelsChart');
+            let html = '<div style="display: flex; flex-wrap: wrap; gap: 16px;">';
+            
+            Object.entries(evModels).forEach(([model, count]) => {
+                const percentage = (count / Object.values(evModels).reduce((a, b) => a + b, 0) * 100).toFixed(1);
+                html += `
+                    <div style="flex: 1; min-width: 150px; padding: 16px; background: var(--gray-lightest); border-radius: var(--radius-sm);">
+                        <div style="font-weight: 600; margin-bottom: 8px;">${formatModelName(model)}</div>
+                        <div style="font-size: 24px; font-weight: 700; color: var(--primary);">${count}</div>
+                        <div style="font-size: 12px; color: var(--gray);">${percentage}%</div>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        function displayUseCases(useCases) {
+            const container = document.getElementById('useCasesChart');
+            let html = '<div style="display: flex; flex-wrap: wrap; gap: 16px;">';
+            
+            Object.entries(useCases).forEach(([useCase, count]) => {
+                const percentage = (count / Object.values(useCases).reduce((a, b) => a + b, 0) * 100).toFixed(1);
+                html += `
+                    <div style="flex: 1; min-width: 150px; padding: 16px; background: var(--gray-lightest); border-radius: var(--radius-sm);">
+                        <div style="font-weight: 600; margin-bottom: 8px;">${formatUseCase(useCase)}</div>
+                        <div style="font-size: 24px; font-weight: 700; color: var(--secondary);">${count}</div>
+                        <div style="font-size: 12px; color: var(--gray);">${percentage}%</div>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        function displayRecentSignups(signups) {
+            const tbody = document.getElementById('recentSignupsTable');
+            
+            tbody.innerHTML = signups.map(signup => `
+                <tr>
+                    <td>${signup.name}</td>
+                    <td>${signup.email}</td>
+                    <td>${formatModelName(signup.ev_model)}</td>
+                    <td>${formatUseCase(signup.use_case)}</td>
+                    <td>${new Date(signup.created_at).toLocaleDateString()}</td>
+                </tr>
+            `).join('');
+        }
+
+        function formatModelName(model) {
+            const modelMap = {
+                'model_s': 'Tesla Model S',
+                'model_3': 'Tesla Model 3',
+                'model_x': 'Tesla Model X',
+                'model_y': 'Tesla Model Y',
+                'cybertruck': 'Tesla Cybertruck',
+                'rivian_r1t': 'Rivian R1T',
+                'rivian_r1s': 'Rivian R1S',
+                'ford_f150': 'Ford F-150 Lightning',
+                'ford_mustang': 'Ford Mustang Mach-E',
+                'other': 'Other EV'
+            };
+            return modelMap[model] || model;
+        }
+
+        function formatUseCase(useCase) {
+            const useCaseMap = {
+                'rideshare': 'Rideshare (Uber/Lyft)',
+                'real_estate': 'Real Estate',
+                'sales': 'Sales/Client Visits',
+                'freelance': 'Freelance/Consulting',
+                'delivery': 'Delivery Services',
+                'other': 'Other Business'
+            };
+            return useCaseMap[useCase] || useCase;
+        }
+
+        // Auto-refresh every 5 minutes
+        setInterval(() => {
+            if (currentApiKey && !document.getElementById('dashboardSection').classList.contains('hidden')) {
+                loadAnalytics();
+            }
+        }, 5 * 60 * 1000);
+    </script>
+</body>
+</html>

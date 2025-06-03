@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About VoltTracker - The Team Behind Automated EV Mileage Tracking</title>
+    <meta name="description" content="Learn about VoltTracker's mission to help electric vehicle owners save thousands on taxes through automated mileage tracking. Meet our team and story.">
+    
+    <link rel="stylesheet" href="styles.css">
+    
+    <style>
+        .about-hero {
+            padding: 120px 0 80px;
+            background: linear-gradient(to bottom, var(--white) 0%, var(--gray-lightest) 100%);
+            text-align: center;
+        }
+        
+        .about-content {
+            max-width: 800px;
+            margin: 0 auto 80px;
+            padding: 0 24px;
+        }
+        
+        .mission-section {
+            background: var(--white);
+            padding: 80px 0;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 48px;
+            margin: 64px 0;
+        }
+        
+        .stat-card {
+            text-align: center;
+            padding: 32px;
+            background: var(--gray-lightest);
+            border-radius: var(--radius-lg);
+        }
+        
+        .stat-number {
+            font-size: 48px;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+        
+        .stat-label {
+            font-size: 16px;
+            color: var(--gray);
+        }
+        
+        .team-section {
+            background: var(--gray-lightest);
+            padding: 80px 0;
+        }
+        
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 48px;
+            margin-top: 64px;
+        }
+        
+        .team-card {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            padding: 40px;
+            text-align: center;
+            box-shadow: var(--shadow-md);
+        }
+        
+        .team-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: var(--primary-light);
+            margin: 0 auto 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .team-name {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .team-role {
+            color: var(--primary);
+            font-weight: 500;
+            margin-bottom: 16px;
+        }
+        
+        .team-bio {
+            color: var(--gray-dark);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        
+        .values-section {
+            background: var(--white);
+            padding: 80px 0;
+        }
+        
+        .values-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 32px;
+            margin-top: 64px;
+        }
+        
+        .value-card {
+            text-align: center;
+            padding: 32px 24px;
+        }
+        
+        .value-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 24px;
+            background: var(--primary-light);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .timeline-section {
+            background: var(--gray-lightest);
+            padding: 80px 0;
+        }
+        
+        .timeline {
+            max-width: 600px;
+            margin: 64px auto 0;
+            position: relative;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: var(--primary-light);
+            transform: translateX(-50%);
+        }
+        
+        .timeline-item {
+            position: relative;
+            margin-bottom: 48px;
+            padding: 0 32px;
+        }
+        
+        .timeline-item:nth-child(odd) {
+            text-align: right;
+        }
+        
+        .timeline-item:nth-child(even) {
+            text-align: left;
+        }
+        
+        .timeline-dot {
+            position: absolute;
+            left: 50%;
+            top: 0;
+            width: 16px;
+            height: 16px;
+            background: var(--primary);
+            border: 4px solid var(--white);
+            border-radius: 50%;
+            transform: translateX(-50%);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .timeline-date {
+            font-size: 14px;
+            color: var(--primary);
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .timeline-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .timeline-desc {
+            color: var(--gray-dark);
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <a href="/" class="logo">
+                    <div class="logo-icon">
+                        <svg class="logo-svg" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="20" cy="20" r="20" fill="#FF385C"/>
+                            <path d="M24 12L16 20H21L17 28L25 20H20L24 12Z" fill="white" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    VoltTracker
+                </a>
+                <nav>
+                    <ul class="nav-menu">
+                        <li><a href="/#features">Features</a></li>
+                        <li><a href="/#how-it-works">How it Works</a></li>
+                        <li><a href="/#pricing">Pricing</a></li>
+                        <li><a href="/faq.html">FAQ</a></li>
+                        <li><a href="#" class="btn btn-secondary">Sign In</a></li>
+                        <li><a href="/#beta" class="btn btn-primary">Get Started</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <section class="about-hero">
+        <div class="container">
+            <h1>Making Tax Deductions Effortless for EV Owners</h1>
+            <p class="text-lg" style="max-width: 600px; margin: 24px auto 0;">We're on a mission to help electric vehicle owners maximize their tax savings while supporting the transition to sustainable transportation.</p>
+        </div>
+    </section>
+
+    <section class="mission-section">
+        <div class="container">
+            <div class="about-content">
+                <h2>Our Story</h2>
+                <p>VoltTracker was born from a simple frustration: EV owners were missing out on thousands of dollars in legitimate tax deductions because manual mileage tracking is tedious, error-prone, and easy to forget.</p>
+                
+                <p>As early Tesla adopters and small business owners, our founders experienced this pain firsthand. They were driving for business daily but losing money at tax time because they couldn't prove their business mileage to the IRS.</p>
+                
+                <p>The solution became clear: leverage the advanced connectivity of modern electric vehicles to automatically capture every business mile with IRS-compliant precision. No apps to remember, no logs to maintain - just automatic savings.</p>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number">$3,847</div>
+                        <div class="stat-label">Average Annual Savings</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">500+</div>
+                        <div class="stat-label">Beta Users</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">2.1M</div>
+                        <div class="stat-label">Miles Tracked</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">99.2%</div>
+                        <div class="stat-label">Accuracy Rate</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="team-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Meet the Team</h2>
+                <p>Built by EV enthusiasts who understand the unique needs of electric vehicle owners</p>
+            </div>
+            
+            <div class="team-grid">
+                <div class="team-card">
+                    <div class="team-avatar">AJ</div>
+                    <h3 class="team-name">Alex Johnson</h3>
+                    <div class="team-role">CEO & Co-Founder</div>
+                    <p class="team-bio">Former Tesla engineer with 8 years building vehicle connectivity systems. Drives a Model S and saves $4,200/year with VoltTracker. Passionate about making sustainable transportation profitable for business owners.</p>
+                </div>
+                
+                <div class="team-card">
+                    <div class="team-avatar">SC</div>
+                    <h3 class="team-name">Sarah Chen</h3>
+                    <div class="team-role">CTO & Co-Founder</div>
+                    <p class="team-bio">Previously built AI systems at Uber for ride optimization. Model 3 owner since 2018. Expert in location intelligence and machine learning for automated trip categorization.</p>
+                </div>
+                
+                <div class="team-card">
+                    <div class="team-avatar">MR</div>
+                    <h3 class="team-name">Marcus Rodriguez</h3>
+                    <div class="team-role">Head of Product</div>
+                    <p class="team-bio">Former product manager at TurboTax, focused on small business tax optimization. Rivian R1T owner and advocate for simple, automated financial tools that save users money.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="values-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Our Values</h2>
+                <p>The principles that guide how we build products and serve customers</p>
+            </div>
+            
+            <div class="values-grid">
+                <div class="value-card">
+                    <div class="value-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#FF385C" stroke-width="2">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                            <path d="m9 12 2 2 4-4"/>
+                        </svg>
+                    </div>
+                    <h4>Privacy First</h4>
+                    <p>Your location data is yours. We collect only what's needed for mileage tracking and never sell or share personal information.</p>
+                </div>
+                
+                <div class="value-card">
+                    <div class="value-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#FF385C" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
+                            <line x1="9" y1="9" x2="9.01" y2="9"/>
+                            <line x1="15" y1="9" x2="15.01" y2="9"/>
+                        </svg>
+                    </div>
+                    <h4>Simplicity</h4>
+                    <p>Complex problems deserve simple solutions. Set it once, save forever - no apps to remember or logs to maintain.</p>
+                </div>
+                
+                <div class="value-card">
+                    <div class="value-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#FF385C" stroke-width="2">
+                            <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/>
+                            <circle cx="12" cy="13" r="3"/>
+                        </svg>
+                    </div>
+                    <h4>Accuracy</h4>
+                    <p>IRS audits require precise documentation. Our GPS tracking and categorization meets the highest standards for tax compliance.</p>
+                </div>
+                
+                <div class="value-card">
+                    <div class="value-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#FF385C" stroke-width="2">
+                            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+                            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+                        </svg>
+                    </div>
+                    <h4>Transparency</h4>
+                    <p>Clear pricing, open about how we work, and honest about what data we collect. No hidden fees or surprises.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="timeline-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Our Journey</h2>
+                <p>From idea to helping thousands of EV owners save on taxes</p>
+            </div>
+            
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-date">Q1 2024</div>
+                    <h4 class="timeline-title">The Idea</h4>
+                    <p class="timeline-desc">Founders missed $2,800 in deductions due to poor mileage tracking. Realized EVs' connectivity could solve this automatically.</p>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-date">Q2 2024</div>
+                    <h4 class="timeline-title">First Prototype</h4>
+                    <p class="timeline-desc">Built MVP with Tesla API integration. Tested with 10 early users, achieved 94% categorization accuracy.</p>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-date">Q3 2024</div>
+                    <h4 class="timeline-title">Beta Launch</h4>
+                    <p class="timeline-desc">Launched beta with 100 Tesla owners. Users saved average of $3,200 in first quarter. Waitlist grew to 2,000+.</p>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-date">Q4 2024</div>
+                    <h4 class="timeline-title">Expanding Access</h4>
+                    <p class="timeline-desc">Opening beta to 500 users. Adding Ford, Rivian, and BMW support. Building accounting software integrations.</p>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-date">Q1 2025</div>
+                    <h4 class="timeline-title">Public Launch</h4>
+                    <p class="timeline-desc">Full public launch with support for 15+ EV models. Tax season ready with audit-proof documentation.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta">
+        <div class="container">
+            <h2>Join the EV Tax Revolution</h2>
+            <p>Be part of the community that's saving thousands while driving the future</p>
+            <a href="/#beta" class="btn btn-primary btn-lg">Get Beta Access</a>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h4>
+                        <svg width="32" height="32" viewBox="0 0 40 40" fill="none">
+                            <circle cx="20" cy="20" r="20" fill="#FF385C"/>
+                            <path d="M24 12L16 20H21L17 28L25 20H20L24 12Z" fill="white"/>
+                        </svg>
+                        VoltTracker
+                    </h4>
+                    <p>Automated mileage tracking for electric vehicle owners.</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h5>Product</h5>
+                    <ul class="footer-links">
+                        <li><a href="/#features">Features</a></li>
+                        <li><a href="/#how-it-works">How it Works</a></li>
+                        <li><a href="/#pricing">Pricing</a></li>
+                        <li><a href="/faq.html">FAQ</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h5>Company</h5>
+                    <ul class="footer-links">
+                        <li><a href="/about.html">About Us</a></li>
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#">Careers</a></li>
+                        <li><a href="#">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h5>Legal</h5>
+                    <ul class="footer-links">
+                        <li><a href="/privacy.html">Privacy Policy</a></li>
+                        <li><a href="/terms.html">Terms of Service</a></li>
+                        <li><a href="#">Security</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2024 VoltTracker. Not affiliated with Tesla, Inc. or other EV manufacturers.</p>
+                <p>Made with ⚡ for EV drivers</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
