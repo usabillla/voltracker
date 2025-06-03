@@ -29,7 +29,7 @@ export default async function handler(req, res) {
 
   try {
     // Get basic signup stats
-    const { data: totalSignups, error: totalError } = await supabase
+    const { count: totalSignups, error: totalError } = await supabase
       .from('beta_signups')
       .select('*', { count: 'exact', head: true });
 
@@ -102,14 +102,14 @@ export default async function handler(req, res) {
 
     return res.status(200).json({
       summary: {
-        totalSignups: totalSignups.count,
+        totalSignups: totalSignups || 0,
         todaySignups: dailySignups[new Date().toISOString().split('T')[0]] || 0,
-        averageDailySignups: Object.values(dailySignups).reduce((a, b) => a + b, 0) / 30
+        averageDailySignups: Object.values(dailySignups).length > 0 ? Object.values(dailySignups).reduce((a, b) => a + b, 0) / 30 : 0
       },
-      evModels: evModelStats,
-      useCases: useCaseStats,
-      dailySignups: dailySignups,
-      recentSignups: recentSignups.map(signup => ({
+      evModels: evModelStats || {},
+      useCases: useCaseStats || {},
+      dailySignups: dailySignups || {},
+      recentSignups: (recentSignups || []).map(signup => ({
         ...signup,
         email: signup.email.replace(/(.{3}).*(@.*)/, '$1***$2') // Mask email for privacy
       }))
