@@ -12,6 +12,9 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.39.0"
   },
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "devDependencies": {
     "vercel": "^33.0.0"
   },

@@ -2,18 +2,7 @@
     "name": "VoltTracker - Automated Mileage Tracking for Electric Vehicles",
     "short_name": "VoltTracker",
     "description": "Save thousands on taxes with automated mileage tracking for Tesla and EV owners. Zero effort, maximum deductions.",
-    "icons": [
-        {
-            "src": "/android-chrome-192x192.png",
-            "sizes": "192x192",
-            "type": "image/png"
-        },
-        {
-            "src": "/android-chrome-512x512.png",
-            "sizes": "512x512",
-            "type": "image/png"
-        }
-    ],
+    "icons": [],
     "theme_color": "#FF385C",
     "background_color": "#FFFFFF",
     "display": "standalone",
