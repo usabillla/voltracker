@@ -90,5 +90,42 @@ module.exports = {
       logging: 'warn',
     },
     webSocketServer: 'ws',
+    setupMiddlewares: (middlewares, devServer) => {
+      if (!devServer) {
+        throw new Error('webpack-dev-server is not defined');
+      }
+
+      // Add Tesla API endpoints for development
+      devServer.app.post('/api/tesla/token', async (_req, res) => {
+        console.log('Tesla token exchange request received');
+        
+        // For development, return mock tokens
+        const mockTokens = {
+          access_token: 'test_access_token_' + Date.now(),
+          refresh_token: 'test_refresh_token_' + Date.now(),
+          id_token: 'test_id_token_' + Date.now(),
+          expires_in: 3600,
+          token_type: 'Bearer'
+        };
+        
+        res.json(mockTokens);
+      });
+
+      devServer.app.post('/api/tesla/refresh', async (_req, res) => {
+        console.log('Tesla token refresh request received');
+        
+        // For development, return mock refreshed tokens
+        const mockTokens = {
+          access_token: 'test_access_token_refreshed_' + Date.now(),
+          refresh_token: 'test_refresh_token_refreshed_' + Date.now(),
+          expires_in: 3600,
+          token_type: 'Bearer'
+        };
+        
+        res.json(mockTokens);
+      });
+
+      return middlewares;
+    },
   },
 };
