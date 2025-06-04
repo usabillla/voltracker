@@ -258,9 +258,9 @@ p {
     transform: rotate(-45deg) translate(7px, -7px);
 }
 
-/* Desktop Navigation */
+/* Desktop Navigation - Show by default */
 .main-navigation {
-    display: none;
+    display: flex;
     align-items: center;
     gap: var(--space-lg);
 }
@@ -348,7 +348,7 @@ p {
     transform: translateY(-1px);
 }
 
-/* Mobile Navigation Overlay */
+/* Mobile Navigation Overlay - Hidden by default */
 .mobile-navigation {
     display: none;
     position: fixed;
@@ -364,6 +364,7 @@ p {
 }
 
 .mobile-navigation.active {
+    display: block;
     transform: translateX(0);
 }
 
@@ -468,7 +469,6 @@ p {
 
 /* Mobile Navigation Backdrop */
 .mobile-nav-backdrop {
-    display: none;
     position: fixed;
     top: 0;
     left: 0;
@@ -477,11 +477,13 @@ p {
     background: rgba(0, 0, 0, 0.5);
     z-index: 999;
     opacity: 0;
-    transition: opacity 0.3s ease;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
 }
 
 .mobile-nav-backdrop.active {
     opacity: 1;
+    visibility: visible;
 }
 
 /* Focus Management and Accessibility */
@@ -524,31 +526,44 @@ p {
     }
 }
 
-/* Responsive Navigation Behavior */
-@media (min-width: 768px) {
-    .main-navigation { 
-        display: flex; 
+/* Mobile First Responsive Design */
+@media (max-width: 767px) {
+    /* Hide desktop navigation */
+    .main-navigation {
+        display: none;
     }
-    .mobile-menu-button { 
-        display: none !important; 
+    
+    /* Show mobile menu button */
+    .mobile-menu-button {
+        display: flex;
     }
-    .mobile-navigation { 
-        display: none !important; 
-        visibility: hidden;
-        pointer-events: none;
+    
+    /* Mobile navigation - available but hidden */
+    .mobile-navigation {
+        display: block;
+    }
+    
+    /* Show mobile navigation when active */
+    .mobile-navigation.active {
+        display: block;
+        transform: translateX(0);
     }
 }
 
-@media (max-width: 767px) {
+@media (min-width: 768px) {
+    /* Show desktop navigation */
     .main-navigation {
-        display: none !important;
-        visibility: hidden;
+        display: flex;
     }
+    
+    /* Hide mobile menu button */
     .mobile-menu-button {
-        display: flex !important;
+        display: none;
     }
+    
+    /* Hide mobile navigation */
     .mobile-navigation {
-        display: block !important;
+        display: none;
     }
 }
 
