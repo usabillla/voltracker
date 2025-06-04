@@ -225,10 +225,25 @@
             font-size: 16px;
             font-weight: 500;
             transition: color 0.2s;
+            padding: 8px 12px;
+            border-radius: var(--radius-sm);
         }
 
         .nav-menu a:hover {
             color: var(--black);
+            background: var(--gray-lightest);
+        }
+
+        .nav-menu a.btn {
+            padding: 14px 24px;
+            background: var(--primary);
+            color: var(--white) !important;
+            font-weight: 600;
+        }
+
+        .nav-menu a.btn:hover {
+            background: var(--primary-dark);
+            color: var(--white) !important;
         }
 
         /* Buttons */
@@ -719,6 +734,12 @@
             flex-shrink: 0;
         }
 
+        /* Beta Section */
+        .beta-section {
+            padding: 80px 0;
+            background: var(--gray-lightest);
+        }
+
         /* CTA Section */
         .cta {
             padding: 120px 0;
@@ -940,7 +961,6 @@
                         <li><a href="#features">Features</a></li>
                         <li><a href="#how-it-works">How it Works</a></li>
                         <li><a href="#pricing">Pricing</a></li>
-                        <li><a href="/dashboard.html" class="btn btn-secondary">Sign In</a></li>
                         <li><a href="https://app.voltracker.com/" class="btn btn-primary">Get Started</a></li>
                     </ul>
                 </nav>
