@@ -944,26 +944,46 @@
     </style>
 </head>
 <body>
-    <header>
+    <header class="no-print">
         <div class="container">
             <div class="header-content">
-                <a href="#" class="logo">
+                <a href="/" class="logo">
                     <div class="logo-icon">
                         <svg class="logo-svg" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <circle cx="20" cy="20" r="20" fill="#FF385C"/>
                             <path d="M24 12L16 20H21L17 28L25 20H20L24 12Z" fill="white" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                     </div>
-                    VoltTracker
+                    <span>VoltTracker</span>
                 </a>
+                
+                <!-- Mobile menu toggle -->
+                <button class="mobile-menu-toggle" aria-label="Toggle navigation menu">
+                    <span></span>
+                </button>
+                
+                <!-- Desktop navigation -->
                 <nav>
                     <ul class="nav-menu">
-                        <li><a href="#features">Features</a></li>
-                        <li><a href="#how-it-works">How it Works</a></li>
-                        <li><a href="#pricing">Pricing</a></li>
+                        <li><a href="/#features">Features</a></li>
+                        <li><a href="/#how-it-works">How it Works</a></li>
+                        <li><a href="/#pricing">Pricing</a></li>
+                        <li><a href="/faq.html">FAQ</a></li>
                         <li><a href="https://app.voltracker.com/" class="btn btn-primary">Get Started</a></li>
                     </ul>
                 </nav>
+                
+                <!-- Mobile navigation -->
+                <div class="mobile-menu">
+                    <ul class="mobile-nav-links">
+                        <li><a href="/#features">Features</a></li>
+                        <li><a href="/#how-it-works">How it Works</a></li>
+                        <li><a href="/#pricing">Pricing</a></li>
+                        <li><a href="/faq.html">FAQ</a></li>
+                        <li><a href="/about.html">About</a></li>
+                        <li><a href="https://app.voltracker.com/" class="btn btn-primary">Get Started</a></li>
+                    </ul>
+                </div>
             </div>
         </div>
     </header>
@@ -1415,30 +1435,19 @@
                 <div class="footer-section">
                     <h5>Product</h5>
                     <ul class="footer-links">
-                        <li><a href="#features">Features</a></li>
-                        <li><a href="#how-it-works">How it Works</a></li>
-                        <li><a href="#pricing">Pricing</a></li>
+                        <li><a href="/#features">Features</a></li>
+                        <li><a href="/#pricing">Pricing</a></li>
                         <li><a href="/faq.html">FAQ</a></li>
+                        <li><a href="https://app.voltracker.com/">Launch App</a></li>
                     </ul>
                 </div>
                 
                 <div class="footer-section">
                     <h5>Company</h5>
                     <ul class="footer-links">
-                        <li><a href="/about.html">About Us</a></li>
-                        <li><a href="#">Blog</a></li>
-                        <li><a href="#">Careers</a></li>
-                        <li><a href="#">Contact</a></li>
-                    </ul>
-                </div>
-                
-                <div class="footer-section">
-                    <h5>Legal</h5>
-                    <ul class="footer-links">
-                        <li><a href="/privacy.html">Privacy Policy</a></li>
-                        <li><a href="#">Terms of Service</a></li>
-                        <li><a href="#">Security</a></li>
-                        <li><a href="#">GDPR</a></li>
+                        <li><a href="/about.html">About</a></li>
+                        <li><a href="/privacy.html">Privacy</a></li>
+                        <li><a href="mailto:support@voltracker.com">Support</a></li>
                     </ul>
                 </div>
             </div>
@@ -1718,8 +1727,51 @@
             }
         }
 
+        // Mobile menu functionality
+        function initMobileMenu() {
+            const mobileToggle = document.querySelector('.mobile-menu-toggle');
+            const mobileMenu = document.querySelector('.mobile-menu');
+            const body = document.body;
+            
+            if (mobileToggle && mobileMenu) {
+                mobileToggle.addEventListener('click', () => {
+                    const isOpen = mobileMenu.classList.contains('active');
+                    
+                    if (isOpen) {
+                        mobileMenu.classList.remove('active');
+                        mobileToggle.classList.remove('active');
+                        body.style.overflow = '';
+                    } else {
+                        mobileMenu.classList.add('active');
+                        mobileToggle.classList.add('active');
+                        body.style.overflow = 'hidden';
+                    }
+                });
+                
+                // Close menu when clicking links
+                const mobileLinks = mobileMenu.querySelectorAll('a');
+                mobileLinks.forEach(link => {
+                    link.addEventListener('click', () => {
+                        mobileMenu.classList.remove('active');
+                        mobileToggle.classList.remove('active');
+                        body.style.overflow = '';
+                    });
+                });
+                
+                // Close menu on escape key
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape' && mobileMenu.classList.contains('active')) {
+                        mobileMenu.classList.remove('active');
+                        mobileToggle.classList.remove('active');
+                        body.style.overflow = '';
+                    }
+                });
+            }
+        }
+
         // Initialize all animations
         document.addEventListener('DOMContentLoaded', () => {
+            initMobileMenu();
             initAnimations();
             initHeroAnimation();
             initPricingEffects();
