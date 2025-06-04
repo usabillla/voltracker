@@ -265,6 +265,11 @@ p {
     gap: var(--space-lg);
 }
 
+/* Mobile Menu Button - Hidden by default */
+.mobile-menu-button {
+    display: none;
+}
+
 .main-navigation .nav-list {
     display: flex;
     align-items: center;
@@ -345,6 +350,7 @@ p {
 
 /* Mobile Navigation Overlay */
 .mobile-navigation {
+    display: none;
     position: fixed;
     top: 0;
     left: 0;
@@ -442,6 +448,82 @@ p {
     margin-top: var(--space-lg);
 }
 
+/* Mobile Navigation Close Button */
+.mobile-nav-close {
+    position: absolute;
+    top: var(--space-lg);
+    right: var(--space-lg);
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    padding: var(--space-sm);
+    color: var(--gray-dark);
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Mobile Navigation Backdrop */
+.mobile-nav-backdrop {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.mobile-nav-backdrop.active {
+    opacity: 1;
+}
+
+/* Focus Management and Accessibility */
+.nav-link:focus,
+.mobile-nav-link:focus,
+.mobile-menu-button:focus,
+.mobile-nav-close:focus,
+.brand-logo:focus {
+    outline: 2px solid #005fcc;
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
+/* Screen Reader Only Text */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Touch Targets */
+.mobile-nav-link {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+    .mobile-navigation,
+    .mobile-nav-backdrop,
+    .hamburger-line {
+        transition: none;
+    }
+}
+
 /* Responsive Navigation Behavior */
 @media (min-width: 768px) {
     .main-navigation { 
@@ -463,10 +545,10 @@ p {
         visibility: hidden;
     }
     .mobile-menu-button {
-        display: flex;
+        display: flex !important;
     }
     .mobile-navigation {
-        display: block;
+        display: block !important;
     }
 }
 
