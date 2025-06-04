@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About VoltTracker - The Team Behind Automated EV Mileage Tracking</title>
-    <meta name="description" content="Learn about VoltTracker's mission to help electric vehicle owners save thousands on taxes through automated mileage tracking. Meet our team and story.">
+    <title>About Voltracker - The Team Behind Automated EV Mileage Tracking</title>
+    <meta name="description" content="Learn about Voltracker's mission to help electric vehicle owners save thousands on taxes through automated mileage tracking. Meet our team and story.">
     
     <link rel="stylesheet" href="styles.css">
     
@@ -239,47 +239,53 @@
     </style>
 </head>
 <body>
-    <!-- Consistent Header -->
-    <header class="no-print">
+    <!-- Navigation Header -->
+    <header class="site-header" role="banner">
         <div class="container">
-            <div class="header-content">
-                <a href="/" class="logo">
+            <div class="header-wrapper">
+                <!-- Brand Logo -->
+                <a href="/" class="brand-logo" aria-label="Voltracker - Home">
                     <div class="logo-icon">
-                        <svg class="logo-svg" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                             <circle cx="20" cy="20" r="20" fill="#FF385C"/>
                             <path d="M24 12L16 20H21L17 28L25 20H20L24 12Z" fill="white" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                     </div>
-                    <span>VoltTracker</span>
+                    <span class="brand-name">Voltracker</span>
                 </a>
                 
-                <!-- Mobile menu toggle -->
-                <button class="mobile-menu-toggle" aria-label="Toggle navigation menu">
-                    <span></span>
-                </button>
-                
-                <!-- Desktop navigation -->
-                <nav>
-                    <ul class="nav-menu">
-                        <li><a href="/#features">Features</a></li>
-                        <li><a href="/#how-it-works">How it Works</a></li>
-                        <li><a href="/#pricing">Pricing</a></li>
-                        <li><a href="/faq.html">FAQ</a></li>
-                        <li><a href="https://app.voltracker.com/" class="btn btn-primary">Get Started</a></li>
+                <!-- Main Navigation -->
+                <nav class="main-navigation" role="navigation" aria-label="Main">
+                    <ul class="nav-list">
+                        <li><a href="/#features" class="nav-link">Features</a></li>
+                        <li><a href="/#how-it-works" class="nav-link">How it Works</a></li>
+                        <li><a href="/#pricing" class="nav-link">Pricing</a></li>
+                        <li><a href="/faq.html" class="nav-link">FAQ</a></li>
+                        <li><a href="/about.html" class="nav-link">About</a></li>
+                        <li><a href="/#beta" class="nav-cta btn btn-primary">Get Started</a></li>
                     </ul>
                 </nav>
                 
-                <!-- Mobile navigation -->
-                <div class="mobile-menu">
-                    <ul class="mobile-nav-links">
-                        <li><a href="/#features">Features</a></li>
-                        <li><a href="/#how-it-works">How it Works</a></li>
-                        <li><a href="/#pricing">Pricing</a></li>
-                        <li><a href="/faq.html">FAQ</a></li>
-                        <li><a href="/about.html">About</a></li>
-                        <li><a href="https://app.voltracker.com/" class="btn btn-primary">Get Started</a></li>
-                    </ul>
-                </div>
+                <!-- Mobile Menu Button -->
+                <button class="mobile-menu-button" type="button" aria-expanded="false" aria-controls="mobile-navigation" aria-label="Toggle navigation menu">
+                    <span class="hamburger-line"></span>
+                    <span class="hamburger-line"></span>
+                    <span class="hamburger-line"></span>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Mobile Navigation Overlay -->
+        <div class="mobile-navigation" id="mobile-navigation" role="navigation" aria-label="Mobile" aria-hidden="true">
+            <div class="mobile-nav-content">
+                <ul class="mobile-nav-list">
+                    <li><a href="/#features" class="mobile-nav-link">Features</a></li>
+                    <li><a href="/#how-it-works" class="mobile-nav-link">How it Works</a></li>
+                    <li><a href="/#pricing" class="mobile-nav-link">Pricing</a></li>
+                    <li><a href="/faq.html" class="mobile-nav-link">FAQ</a></li>
+                    <li><a href="/about.html" class="mobile-nav-link">About</a></li>
+                    <li><a href="/#beta" class="mobile-nav-cta btn btn-primary">Get Started</a></li>
+                </ul>
             </div>
         </div>
     </header>
@@ -295,7 +301,7 @@
         <div class="container">
             <div class="about-content">
                 <h2>Our Story</h2>
-                <p>VoltTracker was born from a simple frustration: EV owners were missing out on thousands of dollars in legitimate tax deductions because manual mileage tracking is tedious, error-prone, and easy to forget.</p>
+                <p>Voltracker was born from a simple frustration: EV owners were missing out on thousands of dollars in legitimate tax deductions because manual mileage tracking is tedious, error-prone, and easy to forget.</p>
                 
                 <p>As early Tesla adopters and small business owners, our founders experienced this pain firsthand. They were driving for business daily but losing money at tax time because they couldn't prove their business mileage to the IRS.</p>
                 
@@ -335,7 +341,7 @@
                     <div class="team-avatar">AJ</div>
                     <h3 class="team-name">Alex Johnson</h3>
                     <div class="team-role">CEO & Co-Founder</div>
-                    <p class="team-bio">Former Tesla engineer with 8 years building vehicle connectivity systems. Drives a Model S and saves $4,200/year with VoltTracker. Passionate about making sustainable transportation profitable for business owners.</p>
+                    <p class="team-bio">Former Tesla engineer with 8 years building vehicle connectivity systems. Drives a Model S and saves $4,200/year with Voltracker. Passionate about making sustainable transportation profitable for business owners.</p>
                 </div>
                 
                 <div class="team-card">
@@ -462,7 +468,7 @@
         <div class="container">
             <h2>Join the EV Tax Revolution</h2>
             <p>Be part of the community that's saving thousands while driving the future</p>
-            <a href="https://app.voltracker.com/" class="btn btn-primary btn-lg">Launch App</a>
+            <a href="/#beta" class="btn btn-primary btn-lg">Launch App</a>
         </div>
     </section>
 
@@ -475,7 +481,7 @@
                             <circle cx="20" cy="20" r="20" fill="#FF385C"/>
                             <path d="M24 12L16 20H21L17 28L25 20H20L24 12Z" fill="white"/>
                         </svg>
-                        VoltTracker
+                        Voltracker
                     </h4>
                     <p>Automated mileage tracking for electric vehicle owners.</p>
                 </div>
@@ -511,52 +517,59 @@
             </div>
             
             <div class="footer-bottom">
-                <p>&copy; 2024 VoltTracker. Not affiliated with Tesla, Inc. or other EV manufacturers.</p>
+                <p>&copy; 2024 Voltracker. Not affiliated with Tesla, Inc. or other EV manufacturers.</p>
                 <p>Made with ⚡ for EV drivers</p>
             </div>
         </div>
     </footer>
 
     <script>
-        // Mobile menu functionality
+        // Mobile navigation functionality
         function initMobileMenu() {
-            const mobileToggle = document.querySelector('.mobile-menu-toggle');
-            const mobileMenu = document.querySelector('.mobile-menu');
+            const menuButton = document.querySelector('.mobile-menu-button');
+            const mobileNav = document.querySelector('.mobile-navigation');
             const body = document.body;
             
-            if (mobileToggle && mobileMenu) {
-                mobileToggle.addEventListener('click', () => {
-                    const isOpen = mobileMenu.classList.contains('active');
+            if (menuButton && mobileNav) {
+                // Toggle mobile menu
+                menuButton.addEventListener('click', () => {
+                    const isExpanded = menuButton.getAttribute('aria-expanded') === 'true';
                     
-                    if (isOpen) {
-                        mobileMenu.classList.remove('active');
-                        mobileToggle.classList.remove('active');
-                        body.style.overflow = '';
-                    } else {
-                        mobileMenu.classList.add('active');
-                        mobileToggle.classList.add('active');
-                        body.style.overflow = 'hidden';
-                    }
+                    // Update ARIA attributes
+                    menuButton.setAttribute('aria-expanded', !isExpanded);
+                    mobileNav.setAttribute('aria-hidden', isExpanded);
+                    
+                    // Toggle visual states
+                    menuButton.classList.toggle('active');
+                    mobileNav.classList.toggle('active');
+                    
+                    // Prevent body scrolling when menu is open
+                    body.style.overflow = isExpanded ? '' : 'hidden';
                 });
                 
-                // Close menu when clicking links
-                const mobileLinks = mobileMenu.querySelectorAll('a');
+                // Close menu when clicking navigation links
+                const mobileLinks = mobileNav.querySelectorAll('.mobile-nav-link, .mobile-nav-cta');
                 mobileLinks.forEach(link => {
                     link.addEventListener('click', () => {
-                        mobileMenu.classList.remove('active');
-                        mobileToggle.classList.remove('active');
-                        body.style.overflow = '';
+                        closeMenu();
                     });
                 });
                 
-                // Close menu on escape key
+                // Close menu with escape key
                 document.addEventListener('keydown', (e) => {
-                    if (e.key === 'Escape' && mobileMenu.classList.contains('active')) {
-                        mobileMenu.classList.remove('active');
-                        mobileToggle.classList.remove('active');
-                        body.style.overflow = '';
+                    if (e.key === 'Escape' && mobileNav.classList.contains('active')) {
+                        closeMenu();
                     }
                 });
+                
+                // Close menu function
+                function closeMenu() {
+                    menuButton.setAttribute('aria-expanded', 'false');
+                    mobileNav.setAttribute('aria-hidden', 'true');
+                    menuButton.classList.remove('active');
+                    mobileNav.classList.remove('active');
+                    body.style.overflow = '';
+                }
             }
         }
 

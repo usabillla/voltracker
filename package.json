@@ -1,7 +1,7 @@
 {
   "name": "voltracker-web",
   "version": "1.0.0",
-  "description": "VoltTracker Landing Page - Automated Mileage Tracking for Electric Vehicle Owners",
+  "description": "Voltracker Landing Page - Automated Mileage Tracking for Electric Vehicle Owners",
   "main": "index.html",
   "scripts": {
     "dev": "vercel dev",
@@ -27,7 +27,7 @@
     "ev",
     "automation"
   ],
-  "author": "VoltTracker Team",
+  "author": "Voltracker Team",
   "license": "MIT",
   "repository": {
     "type": "git",
