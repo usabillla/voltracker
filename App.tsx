@@ -1,4 +1,5 @@
 import React from 'react';
+import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/react';
 import { Screen } from './src/components/shared';
 import { NavigationProvider } from './src/navigation/NavigationContext';
@@ -9,6 +10,7 @@ function App(): React.JSX.Element {
     <NavigationProvider>
       <Screen>
         <Router />
+        <Analytics />
         <SpeedInsights />
       </Screen>
     </NavigationProvider>
