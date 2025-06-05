@@ -9,6 +9,20 @@ if [ ! -f "index.html" ]; then
     exit 1
 fi
 
+# 🚨 SAFETY CHECK: Verify correct repository
+REMOTE_URL=$(git remote get-url origin)
+if [[ "$REMOTE_URL" == *"voltracker-app"* ]]; then
+    echo "🚨 SAFETY CHECK FAILED!"
+    echo "❌ Wrong repository: $REMOTE_URL"
+    echo "✅ Expected: https://github.com/usabillla/voltracker.git (NOT voltracker-app)"
+    echo ""
+    echo "🔧 Fix with:"
+    echo "   git remote remove origin"
+    echo "   git remote add origin https://github.com/usabillla/voltracker.git"
+    exit 1
+fi
+echo "✅ Repository check passed: $REMOTE_URL"
+
 # Check if git is clean
 if [ -n "$(git status --porcelain)" ]; then
     echo "📝 Committing changes..."
