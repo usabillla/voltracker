@@ -22,6 +22,6 @@ git push origin main
 
 # Deploy to Vercel
 echo "🚀 Deploying to Vercel..."
-npx vercel --prod --scope usabillla
+npx vercel --prod
 
 echo "✅ Static website deployed to voltracker.com"
