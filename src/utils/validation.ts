@@ -1,6 +1,6 @@
 export interface ValidationResult {
   isValid: boolean;
-  error: string;
+  error?: string;
 }
 
 export function validateEmail(email: string): ValidationResult {
@@ -13,7 +13,7 @@ export function validateEmail(email: string): ValidationResult {
     return { isValid: false, error: 'Please enter a valid email address' };
   }
   
-  return { isValid: true, error: '' };
+  return { isValid: true };
 }
 
 export function validatePassword(password: string): ValidationResult {
@@ -29,7 +29,7 @@ export function validatePassword(password: string): ValidationResult {
     return { isValid: false, error: 'Password must contain uppercase, lowercase, and number' };
   }
   
-  return { isValid: true, error: '' };
+  return { isValid: true };
 }
 
 export function validateConfirmPassword(password: string, confirmPassword: string): ValidationResult {
@@ -41,5 +41,5 @@ export function validateConfirmPassword(password: string, confirmPassword: strin
     return { isValid: false, error: 'Passwords do not match' };
   }
   
-  return { isValid: true, error: '' };
+  return { isValid: true };
 }

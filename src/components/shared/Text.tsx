@@ -39,7 +39,7 @@ export const Text: React.FC<TextProps> = ({
 
   return (
     <RNText style={[getTextStyle(), style]} {...props}>
-      {children}
+      {typeof children === 'string' ? children : children}
     </RNText>
   );
 };

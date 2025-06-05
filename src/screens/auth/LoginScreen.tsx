@@ -18,7 +18,7 @@ export const LoginScreen: React.FC = () => {
     
     const emailValidation = validateEmail(email);
     if (!emailValidation.isValid) {
-      setEmailError(emailValidation.error);
+      setEmailError(emailValidation.error || '');
       isValid = false;
     } else {
       setEmailError('');
@@ -26,7 +26,7 @@ export const LoginScreen: React.FC = () => {
     
     const passwordValidation = validatePassword(password);
     if (!passwordValidation.isValid) {
-      setPasswordError(passwordValidation.error);
+      setPasswordError(passwordValidation.error || '');
       isValid = false;
     } else {
       setPasswordError('');
@@ -51,7 +51,7 @@ export const LoginScreen: React.FC = () => {
         onChangeText={setEmail}
         keyboardType="email-address"
         autoCapitalize="none"
-        error={emailError}
+        error={emailError || undefined}
         onFocus={clearError}
       />
       
@@ -60,7 +60,7 @@ export const LoginScreen: React.FC = () => {
         value={password}
         onChangeText={setPassword}
         secureTextEntry
-        error={passwordError}
+        error={passwordError || undefined}
         onFocus={clearError}
       />
       

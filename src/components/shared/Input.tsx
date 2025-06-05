@@ -68,7 +68,7 @@ export const Input: React.FC<InputProps> = ({
         selectionColor={theme.colors.primary}
         {...props}
       />
-      {error && (
+      {error && error.trim() && (
         <Text style={errorStyle}>{error}</Text>
       )}
     </View>
