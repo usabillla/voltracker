@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeuroLink Breach</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: radial-gradient(circle at 30% 20%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+                        radial-gradient(circle at 40% 40%, rgba(120, 219, 226, 0.3) 0%, transparent 50%),
+                        #000;
+            color: #ffffff;
+            overflow: hidden;
+            height: 100vh;
+            touch-action: manipulation;
+        }
+
+        .game-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            backdrop-filter: blur(20px);
+        }
+
+        .liquid-glass {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .hud {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            display: flex;
+            justify-content: space-between;
+            z-index: 100;
+            padding: 16px 20px;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .stat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            opacity: 0.9;
+        }
+
+        .stat-value {
+            font-size: 16px;
+            font-weight: 700;
+            margin-top: 4px;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .neural-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 119, 198, 0.1) 0%, transparent 50%),
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 200px 200px, 200px 200px, 40px 40px, 40px 40px;
+            animation: neuralPulse 4s ease-in-out infinite;
+        }
+
+        @keyframes neuralPulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.7; }
+        }
+
+        .bio-node {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px) saturate(180%);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            font-size: 10px;
+            text-align: center;
+            font-weight: 600;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            animation: bioNodePulse 3s ease-in-out infinite;
+        }
+
+        @keyframes bioNodePulse {
+            0%, 100% { 
+                transform: scale(1);
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            }
+            50% { 
+                transform: scale(1.05);
+                box-shadow: 0 12px 40px rgba(120, 119, 198, 0.4);
+            }
+        }
+
+        .bio-node.human {
+            background: linear-gradient(135deg, rgba(255, 107, 107, 0.2), rgba(255, 107, 107, 0.1));
+            border-color: rgba(255, 107, 107, 0.6);
+            color: #ff6b6b;
+        }
+
+        .bio-node.cyborg {
+            background: linear-gradient(135deg, rgba(78, 205, 196, 0.2), rgba(78, 205, 196, 0.1));
+            border-color: rgba(78, 205, 196, 0.6);
+            color: #4ecdc4;
+        }
+
+        .bio-node.android {
+            background: linear-gradient(135deg, rgba(255, 184, 77, 0.2), rgba(255, 184, 77, 0.1));
+            border-color: rgba(255, 184, 77, 0.6);
+            color: #ffb84d;
+        }
+
+        .bio-node.ai-core {
+            background: linear-gradient(135deg, rgba(120, 119, 198, 0.2), rgba(120, 119, 198, 0.1));
+            border-color: rgba(120, 119, 198, 0.6);
+            color: #7877c6;
+        }
+
+        .bio-node.infected {
+            background: linear-gradient(135deg, rgba(255, 0, 0, 0.3), rgba(255, 0, 0, 0.1));
+            border-color: rgba(255, 0, 0, 0.8);
+            box-shadow: 0 0 30px rgba(255, 0, 0, 0.5);
+            animation: infectedPulse 1s ease-in-out infinite;
+        }
+
+        @keyframes infectedPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .bio-node.hacked {
+            background: linear-gradient(135deg, rgba(0, 255, 0, 0.3), rgba(0, 255, 0, 0.1));
+            border-color: rgba(0, 255, 0, 0.8);
+            box-shadow: 0 0 30px rgba(0, 255, 0, 0.5);
+        }
+
+        .neural-connection {
+            position: absolute;
+            height: 3px;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                rgba(255, 255, 255, 0.1) 20%, 
+                rgba(120, 119, 198, 0.6) 50%, 
+                rgba(255, 255, 255, 0.1) 80%, 
+                transparent 100%);
+            transform-origin: left center;
+            opacity: 0.7;
+            animation: dataStream 3s linear infinite;
+            border-radius: 2px;
+        }
+
+        @keyframes dataStream {
+            0% { 
+                background-position: -200px 0;
+                opacity: 0.3;
+            }
+            50% {
+                opacity: 0.8;
+            }
+            100% { 
+                background-position: 200px 0;
+                opacity: 0.3;
+            }
+        }
+
+        .interface-panel {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(40px) saturate(180%);
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 24px 24px 0 0;
+            padding: 24px;
+            transform: translateY(100%);
+            transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        .interface-panel.active {
+            transform: translateY(0);
+        }
+
+        .interface-title {
+            text-align: center;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hack-method {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 12px 0;
+            padding: 16px 20px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            font-weight: 600;
+        }
+
+        .hack-method:active {
+            transform: scale(0.98);
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .hack-method-info {
+            display: flex;
+            flex-direction: column;
+            font-size: 12px;
+            opacity: 0.7;
+        }
+
+        .biometric-scanner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 250px;
+            height: 250px;
+            border: 2px solid rgba(78, 205, 196, 0.6);
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background: rgba(78, 205, 196, 0.05);
+            backdrop-filter: blur(20px);
+            animation: scannerPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes scannerPulse {
+            0%, 100% { 
+                border-color: rgba(78, 205, 196, 0.6);
+                box-shadow: 0 0 20px rgba(78, 205, 196, 0.3);
+            }
+            50% { 
+                border-color: rgba(78, 205, 196, 1);
+                box-shadow: 0 0 40px rgba(78, 205, 196, 0.6);
+            }
+        }
+
+        .biometric-scanner.active {
+            display: flex;
+        }
+
+        .scanner-inner {
+            width: 150px;
+            height: 150px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .message-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(20px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .message-content {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            max-width: 300px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .message-content h3 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .message-content p {
+            font-size: 14px;
+            line-height: 1.5;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            border: none;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        .btn-primary:active {
+            transform: scale(0.95);
+        }
+
+        .trace-wave {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                rgba(255, 0, 0, 0.8) 50%, 
+                transparent 100%);
+            animation: traceWave 2s linear infinite;
+        }
+
+        @keyframes traceWave {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100vw); }
+        }
+
+        .breach-effect {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: radial-gradient(circle, rgba(0, 255, 0, 0.8) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: breachPulse 0.8s ease-out forwards;
+        }
+
+        @keyframes breachPulse {
+            0% { 
+                transform: scale(0);
+                opacity: 1;
+            }
+            100% { 
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        .neural-spark {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: #4ecdc4;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #4ecdc4;
+            animation: sparkMove 2s ease-out forwards;
+        }
+
+        @keyframes sparkMove {
+            0% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="hud liquid-glass">
+            <div class="stat">
+                <div>TRACE LEVEL</div>
+                <div class="stat-value" id="trace">0%</div>
+            </div>
+            <div class="stat">
+                <div>NEURO CREDITS</div>
+                <div class="stat-value" id="credits">2500</div>
+            </div>
+            <div class="stat">
+                <div>SECTOR</div>
+                <div class="stat-value" id="level">Alpha-7</div>
+            </div>
+            <div class="stat">
+                <div>BREACHED</div>
+                <div class="stat-value" id="nodes">0/12</div>
+            </div>
+        </div>
+
+        <div class="neural-grid"></div>
+
+        <div class="interface-panel" id="hackInterface">
+            <div class="interface-title">
+                <span id="targetName">NEURAL INTERFACE</span>
+            </div>
+            <div class="hack-method" data-method="biometric">
+                <div>
+                    <div>BIOMETRIC SPOOF</div>
+                    <div class="hack-method-info">
+                        <span>Retinal/Fingerprint Override</span>
+                    </div>
+                </div>
+                <div class="hack-method-info">
+                    <span>Cost: 150 NC</span>
+                    <span>Success: 45%</span>
+                </div>
+            </div>
+            <div class="hack-method" data-method="neural">
+                <div>
+                    <div>NEURAL INJECTION</div>
+                    <div class="hack-method-info">
+                        <span>Direct Brain Interface</span>
+                    </div>
+                </div>
+                <div class="hack-method-info">
+                    <span>Cost: 300 NC</span>
+                    <span>Success: 70%</span>
+                </div>
+            </div>
+            <div class="hack-method" data-method="quantum">
+                <div>
+                    <div>QUANTUM ENTANGLEMENT</div>
+                    <div class="hack-method-info">
+                        <span>Consciousness Bridge</span>
+                    </div>
+                </div>
+                <div class="hack-method-info">
+                    <span>Cost: 500 NC</span>
+                    <span>Success: 85%</span>
+                </div>
+            </div>
+            <div class="hack-method" data-method="bioware">
+                <div>
+                    <div>BIOWARE EXPLOIT</div>
+                    <div class="hack-method-info">
+                        <span>Cybernetic Backdoor</span>
+                    </div>
+                </div>
+                <div class="hack-method-info">
+                    <span>Cost: 800 NC</span>
+                    <span>Success: 95%</span>
+                </div>
+            </div>
+            <div class="hack-method" onclick="closeInterface()">
+                <div style="color: #ff6b6b;">DISCONNECT</div>
+                <div></div>
+            </div>
+        </div>
+
+        <div class="biometric-scanner" id="biometricScanner">
+            <div class="scanner-inner">
+                <div>Touch and hold for<br>biometric scan</div>
+            </div>
+        </div>
+
+        <div class="message-overlay" id="messageOverlay">
+            <div class="message-content">
+                <h3 id="messageTitle">NeuroLink Breach</h3>
+                <p id="messageText">Welcome to the neural network of 2087. Breach bio-enhanced humans and AI systems. Avoid corporate security traces!</p>
+                <button class="btn-primary" onclick="hideMessage()">JACK IN</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class NeuroBreachGame {
+            constructor() {
+                this.bioNodes = [];
+                this.connections = [];
+                this.gameState = {
+                    trace: 0,
+                    credits: 2500,
+                    level: 'Alpha-7',
+                    hackedNodes: 0,
+                    totalNodes: 12
+                };
+                this.currentTarget = null;
+                this.scanPoints = [];
+                this.isScanning = false;
+                this.nodeTypes = [
+                    { type: 'human', names: ['Dr. Sarah Chen', 'Marcus Webb', 'Elena Vasquez', 'Prof. Kim'], interfaces: ['BrainLink v3.2', 'NeuroMesh Pro', 'CogniLink Standard'] },
+                    { type: 'cyborg', names: ['Unit-7743', 'Aria-X', 'Zephyr-9', 'Nova-Core'], interfaces: ['SynthNeural OS', 'BioMech Interface', 'HybridMind v2.1'] },
+                    { type: 'android', names: ['Android-Alpha', 'Nexus-Beta', 'Prime-Delta'], interfaces: ['AndroidOS Neural', 'SyntheticMind v4.0', 'ArtificialBrain Core'] },
+                    { type: 'ai-core', names: ['ARIA', 'NEXUS', 'OMEGA', 'VERTEX'], interfaces: ['QuantumCore OS', 'Neural-Net Matrix', 'AI-Consciousness Hub'] }
+                ];
+                
+                this.init();
+            }
+
+            init() {
+                this.generateNetwork();
+                this.setupEventListeners();
+                this.showMessage('NeuroLink Breach', 'Welcome to the neural network of 2087. Breach bio-enhanced humans and AI systems. Avoid corporate security traces!');
+            }
+
+            generateNetwork() {
+                const container = document.querySelector('.game-container');
+                const containerWidth = window.innerWidth;
+                const containerHeight = window.innerHeight;
+                
+                // Clear existing nodes
+                document.querySelectorAll('.bio-node, .neural-connection').forEach(el => el.remove());
+                this.bioNodes = [];
+                this.connections = [];
+
+                // Generate bio nodes
+                for (let i = 0; i < this.gameState.totalNodes; i++) {
+                    const node = this.createBioNode(i, containerWidth, containerHeight);
+                    this.bioNodes.push(node);
+                    container.appendChild(node.element);
+                }
+
+                // Generate neural connections
+                this.bioNodes.forEach((node, index) => {
+                    if (index < this.bioNodes.length - 1) {
+                        const connection = this.createNeuralConnection(node, this.bioNodes[index + 1]);
+                        this.connections.push(connection);
+                        container.appendChild(connection);
+                    }
+                });
+
+                // Random additional neural pathways
+                for (let i = 0; i < 4; i++) {
+                    const node1 = this.bioNodes[Math.floor(Math.random() * this.bioNodes.length)];
+                    const node2 = this.bioNodes[Math.floor(Math.random() * this.bioNodes.length)];
+                    if (node1 !== node2) {
+                        const connection = this.createNeuralConnection(node1, node2);
+                        this.connections.push(connection);
+                        container.appendChild(connection);
+                    }
+                }
+            }
+
+            createBioNode(id, containerWidth, containerHeight) {
+                const element = document.createElement('div');
+                element.className = 'bio-node';
+                element.id = `bio-node-${id}`;
+                
+                const x = Math.random() * (containerWidth - 120) + 60;
+                const y = Math.random() * (containerHeight - 300) + 150;
+                
+                element.style.left = `${x}px`;
+                element.style.top = `${y}px`;
+                
+                const nodeTypeData = this.nodeTypes[Math.floor(Math.random() * this.nodeTypes.length)];
+                const nodeName = nodeTypeData.names[Math.floor(Math.random() * nodeTypeData.names.length)];
+                const nodeInterface = nodeTypeData.interfaces[Math.floor(Math.random() * nodeTypeData.interfaces.length)];
+                
+                element.classList.add(nodeTypeData.type);
+                element.innerHTML = `<div>${nodeName}</div>`;
+                
+                const security = Math.random() * 100;
+                
+                element.addEventListener('click', () => this.selectBioNode(id));
+                
+                return {
+                    id,
+                    element,
+                    x,
+                    y,
+                    type: nodeTypeData.type,
+                    name: nodeName,
+                    interface: nodeInterface,
+                    security,
+                    hacked: false
+                };
+            }
+
+            createNeuralConnection(node1, node2) {
+                const element = document.createElement('div');
+                element.className = 'neural-connection';
+                
+                const dx = node2.x - node1.x;
+                const dy = node2.y - node1.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+                
+                element.style.left = `${node1.x + 40}px`;
+                element.style.top = `${node1.y + 40}px`;
+                element.style.width = `${distance}px`;
+                element.style.transform = `rotate(${angle}deg)`;
+                
+                return element;
+            }
+
+            selectBioNode(nodeId) {
+                this.currentTarget = this.bioNodes[nodeId];
+                if (this.currentTarget.hacked) {
+                    this.showMessage('Already Breached', 'This neural interface has already been compromised.');
+                    return;
+                }
+                
+                document.getElementById('targetName').textContent = 
+                    `${this.currentTarget.name} - ${this.currentTarget.interface}`;
+                document.getElementById('hackInterface').classList.add('active');
+                this.increaseTrace(3);
+            }
+
+            setupEventListeners() {
+                document.querySelectorAll('.hack-method').forEach(method => {
+                    method.addEventListener('click', (e) => {
+                        const methodType = e.target.closest('.hack-method').dataset.method;
+                        if (methodType) {
+                            this.executeHack(methodType);
+                        }
+                    });
+                });
+
+                // Biometric scanner controls
+                const scanner = document.getElementById('biometricScanner');
+                scanner.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    this.startBiometricScan();
+                });
+                
+                scanner.addEventListener('touchend', (e) => {
+                    e.preventDefault();
+                    this.endBiometricScan();
+                });
+            }
+
+            executeHack(method) {
+                const costs = {
+                    biometric: 150,
+                    neural: 300,
+                    quantum: 500,
+                    bioware: 800
+                };
+
+                const successRates = {
+                    biometric: 45,
+                    neural: 70,
+                    quantum: 85,
+                    bioware: 95
+                };
+
+                const cost = costs[method];
+                if (this.gameState.credits < cost) {
+                    this.showMessage('Insufficient Credits', 'Not enough NeuroCredits for this operation.');
+                    return;
+                }
+
+                this.gameState.credits -= cost;
+                this.updateHUD();
+                this.closeInterface();
+
+                if (method === 'biometric') {
+                    this.startBiometricInterface();
+                } else if (method === 'neural') {
+                    this.startNeuralInjection();
+                } else {
+                    this.performHack(successRates[method]);
+                }
+            }
+
+            startBiometricInterface() {
+                document.getElementById('biometricScanner').classList.add('active');
+                this.showMessage('Biometric Scanner Active', 'Place and hold your finger on the scanner to spoof biometric data.');
+            }
+
+            startBiometricScan() {
+                this.isScanning = true;
+                this.scanPoints = [];
+                setTimeout(() => {
+                    if (this.isScanning) {
+                        this.endBiometricScan();
+                    }
+                }, 3000);
+            }
+
+            endBiometricScan() {
+                this.isScanning = false;
+                document.getElementById('biometricScanner').classList.remove('active');
+                
+                const success = Math.random() * 100 < 60; // Enhanced success rate for good interaction
+                this.performHack(success ? 100 : 0);
+            }
+
+            startNeuralInjection() {
+                this.createNeuralSparks();
+                setTimeout(() => {
+                    this.performHack(70);
+                }, 2000);
+            }
+
+            createNeuralSparks() {
+                for (let i = 0; i < 10; i++) {
+                    setTimeout(() => {
+                        const spark = document.createElement('div');
+                        spark.className = 'neural-spark';
+                        spark.style.left = `${Math.random() * window.innerWidth}px`;
+                        spark.style.top = `${Math.random() * window.innerHeight}px`;
+                        
+                        const targetX = this.currentTarget.x + 40;
+                        const targetY = this.currentTarget.y + 40;
+                        
+                        spark.style.transform = `translate(${targetX - parseInt(spark.style.left)}px, ${targetY - parseInt(spark.style.top)}px)`;
+                        
+                        document.body.appendChild(spark);
+                        setTimeout(() => spark.remove(), 2000);
+                    }, i * 200);
+                }
+            }
+
+            performHack(successRate) {
+                const success = Math.random() * 100 < successRate;
+                
+                if (success) {
+                    this.currentTarget.hacked = true;
+                    this.currentTarget.element.classList.add('hacked');
+                    this.gameState.hackedNodes++;
+                    this.gameState.credits += 200;
+                    
+                    this.createBreachEffect(this.currentTarget.x + 40, this.currentTarget.y + 40);
+                    
+                    const messages = [
+                        'Neural pathway breached successfully!',
+                        'Consciousness firewall bypassed!',
+                        'Biometric security compromised!',
+                        'Memory core accessed!',
+                        'Synthetic neural network infiltrated!'
+                    ];
+                    
+                    this.showMessage('Breach Successful', messages[Math.floor(Math.random() * messages.length)] + ` +200 NC`);
+                    
+                    if (this.gameState.hackedNodes >= this.gameState.totalNodes) {
+                        this.advanceToNextSector();
+                    }
+                } else {
+                    this.increaseTrace(25);
+                    const failMessages = [
+                        'Neural firewall detected intrusion!',
+                        'Biometric authentication failed!',
+                        'Consciousness barrier activated!',
+                        'Security protocol initiated!',
+                        'Corporate ICE detected!'
+                    ];
+                    this.showMessage('Breach Failed', failMessages[Math.floor(Math.random() * failMessages.length)] + ' Trace increased!');
+                }
+                
+                this.updateHUD();
+            }
+
+            createBreachEffect(x, y) {
+                const effect = document.createElement('div');
+                effect.className = 'breach-effect';
+                effect.style.left = `${x - 20}px`;
+                effect.style.top = `${y - 20}px`;
+                document.body.appendChild(effect);
+                
+                setTimeout(() => effect.remove(), 800);
+            }
+
+            increaseTrace(amount) {
+                this.gameState.trace += amount;
+                if (this.gameState.trace >= 100) {
+                    this.corporateTrace();
+                }
+                this.updateHUD();
+                this.createTraceEffect();
+            }
+
+            createTraceEffect() {
+                if (this.gameState.trace > 30) {
+                    const traceLine = document.createElement('div');
+                    traceLine.className = 'trace-wave';
+                    document.body.appendChild(traceLine);
+                    
+                    setTimeout(() => traceLine.remove(), 2000);
+                }
+            }
+
+            advanceToNextSector() {
+                const sectors = ['Alpha-7', 'Beta-12', 'Gamma-3', 'Delta-9', 'Epsilon-X', 'Omega-Core'];
+                const currentIndex = sectors.indexOf(this.gameState.level);
+                const nextIndex = (currentIndex + 1) % sectors.length;
+                
+                this.gameState.level = sectors[nextIndex];
+                this.gameState.totalNodes += 4;
+                this.gameState.hackedNodes = 0;
+                this.gameState.trace = Math.max(0, this.gameState.trace - 30);
+                this.gameState.credits += 500;
+                
+                this.showMessage('Sector Cleared', `Advancing to ${this.gameState.level}. +500 NC Bonus!`);
+                this.generateNetwork();
+                this.updateHUD();
+            }
+
+            corporateTrace() {
+                this.showMessage('Corporate Trace Complete', 'NeuroSec has located your neural signature! Disconnecting... Click OK to restart.');
+                setTimeout(() => {
+                    this.gameState = {
+                        trace: 0,
+                        credits: 2500,
+                        level: 'Alpha-7',
+                        hackedNodes: 0,
+                        totalNodes: 12
+                    };
+                    this.generateNetwork();
+                    this.updateHUD();
+                }, 3000);
+            }
+
+            updateHUD() {
+                document.getElementById('trace').textContent = `${this.gameState.trace}%`;
+                document.getElementById('credits').textContent = this.gameState.credits;
+                document.getElementById('level').textContent = this.gameState.level;
+                document.getElementById('nodes').textContent = `${this.gameState.hackedNodes}/${this.gameState.totalNodes}`;
+            }
+
+            showMessage(title, text) {
+                document.getElementById('messageTitle').textContent = title;
+                document.getElementById('messageText').textContent = text;
+                document.getElementById('messageOverlay').style.display = 'flex';
+            }
+
+            closeInterface() {
+                document.getElementById('hackInterface').classList.remove('active');
+            }
+        }
+
+        function hideMessage() {
+            document.getElementById('messageOverlay').style.display = 'none';
+        }
+
+        function closeInterface() {
+            document.getElementById('hackInterface').classList.remove('active');
+        }
+
+        // Initialize game when page loads
+        window.addEventListener('load', () => {
+            new NeuroBreachGame();
+        });
+    </script>
+</body>
+</html>
